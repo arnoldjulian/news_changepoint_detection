@@ -1,0 +1,48 @@
+evaluations:
+  "TVD,L=180": [
+    "dvc/evaluations/artificial_split/tvd180",
+    "dvc/evaluations/artificial_split/tvd180_num_1",
+    "dvc/evaluations/artificial_split/tvd180_num_2",
+    "dvc/evaluations/artificial_split/tvd180_num_3",
+    "dvc/evaluations/artificial_split/tvd180_num_4",
+  ]
+  "TVD,L=90": [
+    "dvc/evaluations/artificial_split/tvd90",
+    "dvc/evaluations/artificial_split/tvd90_num_1",
+    "dvc/evaluations/artificial_split/tvd90_num_2",
+    "dvc/evaluations/artificial_split/tvd90_num_3",
+    "dvc/evaluations/artificial_split/tvd90_num_4",
+  ]
+  "FF,tf-idf,L=180": [
+    "dvc/evaluations/artificial_split/confusion_ff_tfidf_l180",
+    "dvc/evaluations/artificial_split/confusion_ff_tfidf_l180_num_1",
+    "dvc/evaluations/artificial_split/confusion_ff_tfidf_l180_num_2",
+    "dvc/evaluations/artificial_split/confusion_ff_tfidf_l180_num_3",
+    "dvc/evaluations/artificial_split/confusion_ff_tfidf_l180_num_4",
+  ]
+  "FF,tf-idf,L=90": [
+    "dvc/evaluations/artificial_split/confusion_ff_tfidf_l90",
+    "dvc/evaluations/artificial_split/confusion_ff_tfidf_l90_num_1",
+    "dvc/evaluations/artificial_split/confusion_ff_tfidf_l90_num_2",
+    "dvc/evaluations/artificial_split/confusion_ff_tfidf_l90_num_3",
+    "dvc/evaluations/artificial_split/confusion_ff_tfidf_l90_num_4",
+  ]
+  "FF,embedding,L=180": [
+    "dvc/evaluations/artificial_split/confusion_ff_embed_l180",
+    "dvc/evaluations/artificial_split/confusion_ff_embed_l180_num_1",
+    "dvc/evaluations/artificial_split/confusion_ff_embed_l180_num_2",
+    "dvc/evaluations/artificial_split/confusion_ff_embed_l180_num_3",
+    "dvc/evaluations/artificial_split/confusion_ff_embed_l180_num_4",
+  ]
+  "FF,embedding,L=90": [
+    "dvc/evaluations/artificial_split/confusion_ff_embed_l90",
+    "dvc/evaluations/artificial_split/confusion_ff_embed_l90_num_1",
+    "dvc/evaluations/artificial_split/confusion_ff_embed_l90_num_2",
+    "dvc/evaluations/artificial_split/confusion_ff_embed_l90_num_3",
+    "dvc/evaluations/artificial_split/confusion_ff_embed_l90_num_4",
+  ]
+summary_path: "dvc/summaries/artificial_split"
+top_n_delta: 1
+show_max_tvd: True
+significant_events_path: "dvc/evaluations/artificial_split/confusion_ff_embed_l180/deltas.csv"
+xticks_format: "YY-MM"

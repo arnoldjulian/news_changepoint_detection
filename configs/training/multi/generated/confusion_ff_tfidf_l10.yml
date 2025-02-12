@@ -1,0 +1,37 @@
+training:
+  name: "confusion_ff_tfidf_l10"
+  dtype: "float32"
+  train_ratio: 0.8
+  batch_size: 1024
+  learning_rate: 0.0001
+  min_epochs: 1000
+  max_epochs: 3000
+  indicator_accuracy_weighting: True
+  first_split_idx: 2
+  vectorizer:
+    type: tfidf
+    tfidf:
+      preprocess_texts: True
+    llm:
+      model_name: "all-MiniLM-L6-v2"
+  training_scheme: "confusion"
+  confusion:
+    split_distance: 10
+  llm:
+    freeze_backend: True
+datasets: [
+    "dvc/datasets/generated/2001/world.pkl",
+    "dvc/datasets/generated/2007/world.pkl",
+    "dvc/datasets/generated/2010/world.pkl",
+    "dvc/datasets/generated/2012/world.pkl",
+    "dvc/datasets/generated/2014/world.pkl",
+    "dvc/datasets/generated/2016/world.pkl",
+    "dvc/datasets/generated/2019/world.pkl",
+    "dvc/datasets/generated/2020/world.pkl",
+    "dvc/datasets/generated/2021/world.pkl",
+    "dvc/datasets/generated/2022/world.pkl"
+  ]
+general:
+  trainings_root: dvc/trainings/generated
+overwrite_trainings: new
+deterministic: False

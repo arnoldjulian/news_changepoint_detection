@@ -1,0 +1,36 @@
+training_name: confusion_ff_embed_l10
+dataset_base_path: "dvc/datasets/generated"
+evaluation_base_path: "dvc/evaluations/generated"
+model_name: "confusion_ff_embed_l10"
+topn_events: 1
+selected_trainings: [
+  "dvc/trainings/generated/2007/world/confusion_ff_embed_l10",
+  "dvc/trainings/generated/2010/world/confusion_ff_embed_l10",
+  "dvc/trainings/generated/2012/world/confusion_ff_embed_l10",
+  "dvc/trainings/generated/2014/world/confusion_ff_embed_l10",
+  "dvc/trainings/generated/2019/world/confusion_ff_embed_l10",
+  "dvc/trainings/generated/2020/world/confusion_ff_embed_l10",
+  "dvc/trainings/generated/2021/world/confusion_ff_embed_l10",
+  "dvc/trainings/generated/2022/world/confusion_ff_embed_l10",
+]
+selected_events: [
+  "dvc/events/generated/2007/world.csv",
+  "dvc/events/generated/2010/world.csv",
+  "dvc/events/generated/2012/world.csv",
+  "dvc/events/generated/2014/world.csv",
+  "dvc/events/generated/2019/world.csv",
+  "dvc/events/generated/2020/world.csv",
+  "dvc/events/generated/2021/world.csv",
+  "dvc/events/generated/2022/world.csv",
+]
+lda_paths: [
+  "dvc/lda/generated/2007",
+  "dvc/lda/generated/2010",
+  "dvc/lda/generated/2012",
+  "dvc/lda/generated/2014",
+  "dvc/lda/generated/2019",
+  "dvc/lda/generated/2020",
+  "dvc/lda/generated/2021",
+  "dvc/lda/generated/2022",
+]
+processes:

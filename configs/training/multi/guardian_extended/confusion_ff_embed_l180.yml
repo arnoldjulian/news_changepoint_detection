@@ -1,0 +1,61 @@
+training:
+  name: "confusion_ff_embed_l180"
+  dtype: "float32"
+  train_ratio: 0.8
+  batch_size: 1024
+  learning_rate: 0.001
+  min_epochs: 200
+  max_epochs: 2000
+  indicator_accuracy_weighting: True
+  first_split_date: "01-01"
+  vectorizer:
+    type: llm
+    tfidf:
+      preprocess_texts: True
+    llm:
+      model_name: "all-MiniLM-L6-v2"
+  training_scheme: "confusion"
+  model_type: "simple"
+  confusion:
+    split_distance: 180
+  llm:
+    freeze_backend: True
+datasets: [
+    "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/uk-news.pkl",
+    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2001-7-1_2003-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2006-7-1_2008-6-30/uk-news.pkl",
+    "dvc/datasets/guardian_extended/2006-7-1_2008-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2006-7-1_2008-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2007-7-1_2009-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2009-7-1_2011-6-30/uk-news.pkl",
+    "dvc/datasets/guardian_extended/2009-7-1_2011-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2009-7-1_2011-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2010-7-1_2012-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2011-7-1_2013-6-30/uk-news.pkl",
+    "dvc/datasets/guardian_extended/2011-7-1_2013-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2011-7-1_2013-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2013-7-1_2015-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2014-7-1_2016-6-30/uk-news.pkl",
+    "dvc/datasets/guardian_extended/2014-7-1_2016-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2015-7-1_2017-6-30/uk-news.pkl",
+    "dvc/datasets/guardian_extended/2015-7-1_2017-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2018-7-1_2020-6-30/uk-news.pkl",
+    "dvc/datasets/guardian_extended/2018-7-1_2020-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2018-7-1_2020-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2019-7-1_2021-6-30/uk-news.pkl",
+    "dvc/datasets/guardian_extended/2019-7-1_2021-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2020-7-1_2022-6-30/uk-news.pkl",
+    "dvc/datasets/guardian_extended/2019-7-1_2021-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2020-7-1_2022-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2020-7-1_2022-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2021-7-1_2023-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2021-7-1_2023-6-30/us-news.pkl",
+]
+general:
+  trainings_root: dvc/trainings/guardian_extended
+overwrite_trainings: new
+deterministic: False

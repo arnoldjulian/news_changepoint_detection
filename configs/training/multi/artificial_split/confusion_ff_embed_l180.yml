@@ -1,0 +1,35 @@
+training:
+  name: "confusion_ff_embed_l180"
+  dtype: "float32"
+  train_ratio: 0.8
+  batch_size: 1024
+  learning_rate: 0.0001
+  min_epochs: 200
+  max_epochs: 20000
+  indicator_accuracy_weighting: True
+  first_split_idx: 20
+  vectorizer:
+    type: llm
+    tfidf:
+      preprocess_texts: True
+    llm:
+      model_name: "all-MiniLM-L6-v2"
+  training_scheme: "confusion"
+  confusion:
+    split_distance: 180
+  llm:
+    freeze_backend: True
+datasets: [
+    "dvc/datasets/artificial_split/2015/uk-news_us-news_2015-05-07.pkl",
+    "dvc/datasets/artificial_split/2019/uk-news_world_2019-01-18.pkl",
+    "dvc/datasets/artificial_split/2019/uk-news_world_2019-10-30.pkl",
+    "dvc/datasets/artificial_split/2000/us-news_uk-news_2000-04-14.pkl",
+    "dvc/datasets/artificial_split/2019/us-news_uk-news_2019-03-27.pkl",
+    "dvc/datasets/artificial_split/2010/us-news_world_2010-04-15.pkl",
+    "dvc/datasets/artificial_split/2022/us-news_world_2022-02-16.pkl",
+    "dvc/datasets/artificial_split/2022/us-news_world_2022-03-17.pkl",
+  ]
+general:
+  trainings_root: dvc/trainings/artificial_split
+overwrite_trainings: new
+deterministic: False

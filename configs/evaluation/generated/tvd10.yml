@@ -1,0 +1,44 @@
+training_name: tvd10
+evaluation_base_path: "dvc/evaluations/generated"
+model_name: "tvd10"
+topn_events: 1
+first_split_idx: 2
+lda:
+  num_topics: 20
+  iterations: 83
+  passes: 22
+  chunksize: 319
+selected_datasets: [
+  "dvc/datasets/generated/2007/world.pkl",
+  "dvc/datasets/generated/2010/world.pkl",
+  "dvc/datasets/generated/2012/world.pkl",
+  "dvc/datasets/generated/2014/world.pkl",
+  "dvc/datasets/generated/2019/world.pkl",
+  "dvc/datasets/generated/2020/world.pkl",
+  "dvc/datasets/generated/2021/world.pkl",
+  "dvc/datasets/generated/2022/world.pkl",
+]
+selected_events: [
+  "dvc/events/generated/2007/world.csv",
+  "dvc/events/generated/2010/world.csv",
+  "dvc/events/generated/2012/world.csv",
+  "dvc/events/generated/2014/world.csv",
+  "dvc/events/generated/2019/world.csv",
+  "dvc/events/generated/2020/world.csv",
+  "dvc/events/generated/2021/world.csv",
+  "dvc/events/generated/2022/world.csv",
+]
+lda_paths: [
+  "dvc/lda/generated/2007",
+  "dvc/lda/generated/2010",
+  "dvc/lda/generated/2012",
+  "dvc/lda/generated/2014",
+  "dvc/lda/generated/2019",
+  "dvc/lda/generated/2020",
+  "dvc/lda/generated/2021",
+  "dvc/lda/generated/2022",
+]
+processes:
+tvd_l: 10
+force_new_tvd: False
+repeat_evaluations: 5
