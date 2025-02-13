@@ -9,6 +9,12 @@ To install all dependencies, run
 pip install .[dev]
 ```
 
+You will need to download the spacy language models as well:
+
+```bash
+python -m spacy download en
+```
+
 ## Running trainings
 
 To run one type of training run

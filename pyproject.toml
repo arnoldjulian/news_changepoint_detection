@@ -25,7 +25,10 @@ dependencies = [
   "nltk>=3.8.1",
   "pyLDAvis>=3.4.0",
   "python-dateutil",
-  "pynvml"
+  "pynvml",
+  "spacy",
+  "plotly",
+  "kaleido"
 ]
 
 [project.optional-dependencies]

@@ -18,7 +18,6 @@ from tqdm import tqdm
 from topic_transition.data import get_splits
 from topic_transition.loss import BCEWithWeights
 from topic_transition.models.confusion import FFConfusion
-from topic_transition.utilization import Monitor
 from topic_transition.utils import get_dates_for_interval
 from topic_transition.vectorizers import get_vectorizer
 
@@ -324,8 +323,6 @@ def train_confusion(
     criterion = BCEWithWeights(data, torch_dtype, device)
     model.to(device)
     criterion.to(device)
-    monitor = Monitor(interval=1)
-    monitor.start()
     min_loss = np.inf
     per_epoch_losses: dict[str, list] = {"epoch": [], "train": [], "val": []}  # type: ignore
     for epoch in tqdm(range(training_config["max_epochs"]), desc="Epoch"):
@@ -342,13 +339,10 @@ def train_confusion(
         else:
             if epoch >= training_config["min_epochs"]:
                 break
-    monitor.stop()
-    stats = monitor.get_stats()
-    stats.to_csv(os.path.join(train_out, "utilization.csv"), index=False)
     loss_df = pd.DataFrame.from_dict(per_epoch_losses)
     loss_df.to_csv(os.path.join(train_out, "per_epoch_losses.csv"), index=False)
     indicators_path = os.path.join(train_out, "indicator_values.csv")
-    model = torch.load(os.path.join(train_out, "best_model_checkpoint.pth"))
+    model = torch.load(os.path.join(train_out, "best_model_checkpoint.pth"), weights_only=False)
     indicator_accuracy_weighting = training_config["indicator_accuracy_weighting"]
     indicator_df = calculate_indicators(
         val_loader, model, device, dates, indicator_accuracy_weighting, first_split_idx, split_distance

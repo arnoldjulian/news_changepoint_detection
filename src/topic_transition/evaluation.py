@@ -3,6 +3,7 @@ import os
 from datetime import date
 
 import nltk
+nltk.download('punkt_tab')
 import numpy as np
 import pandas as pd
 from nltk import word_tokenize
