@@ -1,0 +1,108 @@
+# Running 5 iterations of all model trainings for the generated datasets
+
+make train dataset=generated L=10 model=ff_tfidf
+make train dataset=generated L=10 model=ff_tfidf
+make train dataset=generated L=10 model=ff_tfidf
+make train dataset=generated L=10 model=ff_tfidf
+make train dataset=generated L=10 model=ff_tfidf
+
+make train dataset=generated L=10 model=ff_embed
+make train dataset=generated L=10 model=ff_embed
+make train dataset=generated L=10 model=ff_embed
+make train dataset=generated L=10 model=ff_embed
+make train dataset=generated L=10 model=ff_embed
+
+# Running evaluations for all model trainings for the generated datasets
+
+make eval dataset=generated L=10 model=ff_tfidf
+make eval dataset=generated L=10 model=ff_embed
+# Evaluate baseline tvd on the same data
+make eval_tvd dataset=generated L=10
+
+# Run summarization
+
+make summarize dataset=generated
+
+# Running 5 iterations of all model trainings for the artificial split datasets for L=90,180
+
+make train dataset=artificial_split L=90 model=ff_tfidf
+make train dataset=artificial_split L=90 model=ff_tfidf
+make train dataset=artificial_split L=90 model=ff_tfidf
+make train dataset=artificial_split L=90 model=ff_tfidf
+make train dataset=artificial_split L=90 model=ff_tfidf
+
+make train dataset=artificial_split L=90 model=ff_embed
+make train dataset=artificial_split L=90 model=ff_embed
+make train dataset=artificial_split L=90 model=ff_embed
+make train dataset=artificial_split L=90 model=ff_embed
+make train dataset=artificial_split L=90 model=ff_embed
+
+make train dataset=artificial_split L=180 model=ff_tfidf
+make train dataset=artificial_split L=180 model=ff_tfidf
+make train dataset=artificial_split L=180 model=ff_tfidf
+make train dataset=artificial_split L=180 model=ff_tfidf
+make train dataset=artificial_split L=180 model=ff_tfidf
+
+make train dataset=artificial_split L=180 model=ff_embed
+make train dataset=artificial_split L=180 model=ff_embed
+make train dataset=artificial_split L=180 model=ff_embed
+make train dataset=artificial_split L=180 model=ff_embed
+make train dataset=artificial_split L=180 model=ff_embed
+
+# Running evaluations for all model trainings for the generated datasets
+
+make eval dataset=artificial_split L=90 model=ff_tfidf
+make eval dataset=artificial_split L=90 model=ff_embed
+# Evaluate baseline tvd on the same data
+make eval_tvd dataset=artificial_split L=90
+
+make eval dataset=artificial_split L=180 model=ff_tfidf
+make eval dataset=artificial_split L=180 model=ff_embed
+# Evaluate baseline tvd on the same data
+make eval_tvd dataset=artificial_split L=180
+
+# Run summarization
+
+make summarize dataset=artificial_split
+
+# Running 5 iterations of all model trainings for the real newspaper datasets for L=90,180
+
+make train dataset=guardian_extended L=90 model=ff_tfidf
+make train dataset=guardian_extended L=90 model=ff_tfidf
+make train dataset=guardian_extended L=90 model=ff_tfidf
+make train dataset=guardian_extended L=90 model=ff_tfidf
+make train dataset=guardian_extended L=90 model=ff_tfidf
+
+make train dataset=guardian_extended L=90 model=ff_embed
+make train dataset=guardian_extended L=90 model=ff_embed
+make train dataset=guardian_extended L=90 model=ff_embed
+make train dataset=guardian_extended L=90 model=ff_embed
+make train dataset=guardian_extended L=90 model=ff_embed
+
+make train dataset=guardian_extended L=180 model=ff_tfidf
+make train dataset=guardian_extended L=180 model=ff_tfidf
+make train dataset=guardian_extended L=180 model=ff_tfidf
+make train dataset=guardian_extended L=180 model=ff_tfidf
+make train dataset=guardian_extended L=180 model=ff_tfidf
+
+make train dataset=guardian_extended L=180 model=ff_embed
+make train dataset=guardian_extended L=180 model=ff_embed
+make train dataset=guardian_extended L=180 model=ff_embed
+make train dataset=guardian_extended L=180 model=ff_embed
+make train dataset=guardian_extended L=180 model=ff_embed
+
+# Running evaluations for all model trainings for the real newspaper datasets for L=9,180
+
+make eval dataset=guardian_extended L=90 model=ff_tfidf
+make eval dataset=guardian_extended L=90 model=ff_embed
+# Evaluate baseline tvd on the same data
+make eval_tvd dataset=guardian_extended L=90
+
+make eval dataset=guardian_extended L=180 model=ff_tfidf
+make eval dataset=guardian_extended L=180 model=ff_embed
+# Evaluate baseline tvd on the same data
+make eval_tvd dataset=guardian_extended L=180
+
+# Run summarization
+
+make summarize dataset=guardian_extended

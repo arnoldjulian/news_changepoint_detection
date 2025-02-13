@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools"]
+
+[flake8]
+max-line-length = 120
+
+[project]
+name = "topic_transition"
+authors = [
+  {name = "Csaba Zsolnai,Julian Arnold"}
+]
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+dynamic = ["version"]
+dependencies = [
+  "gensim>=4.3.2",
+  "torch>=2.1.2",
+  "pandas>=2.2.0",
+  "tqdm",
+  "scikit-learn>=1.4.0",
+  "matplotlib>=3.8.2",
+  "scipy==1.10.1",
+  "pydantic",
+  "sentence_transformers>=2.2.2",
+  "nltk>=3.8.1",
+  "pyLDAvis>=3.4.0",
+  "python-dateutil",
+  "pynvml"
+]
+
+[project.optional-dependencies]
+dev = [
+  "black[jupyter]==22.12.0",
+  "flake8==6.0.0",
+  "flake8-builtins==2.1.0",
+  "flake8-bugbear==22.10.27",
+  "flake8-comprehensions==3.10.1",
+  "flake8-docstrings==1.6.0",
+  "isort==5.12.0",
+  "mypy==1.10.0",
+  "pandas-stubs",
+  "types-tqdm",
+  "toml-sort"
+]
+
+[tool.black]
+line-length = 120
+preview = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
