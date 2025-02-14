@@ -11,27 +11,23 @@ from tqdm import tqdm
 from topic_transition.evaluation import get_events_from_path
 from topic_transition.utils import get_dates_for_interval, load_or_train_lda, total_variation_distance
 
-SIGNIFICANCE_SCORE = "avg_tfidf_score"
-
 
 def calculate_dataset_tvd(
     dataset: pd.DataFrame, dist: float = 1, first_split_date: str | None = None, first_split_idx: int | None = None
-):
+) -> pd.DataFrame:
     """
     Calculate Total Variation Distances for each date of the dataset.
 
     Parameters
     ----------
-    dataset : pd.DataFrame
+    dataset
         The dataset containing the data for calculation.
-    dist : int, optional
+    dist
         The distance parameter used for defining the interval around each date.
-
-    Returns
-    -------
-    pd.DataFrame
-        A DataFrame containing the date and corresponding total variation distance (TVD) values.
-
+    first_split_date
+        date of the first possible value of the tuning parameter.
+    first_split_idx
+        index of the first possible value of the tuning parameter.
     """
     start_date = dataset["date"].iloc[0]
     end_date = dataset["date"].iloc[-1]
@@ -91,22 +87,24 @@ def calculate_topict_distribution_tvd(
     first_split_idx: int | None = None,
 ):
     """
-    Calculate deltas for all possible methods.
+    Calculate deltas for all possible methods on a selected dataset.
 
     Parameters
     ----------
-    lda_base_path : str
-        The base path for the lda model.
-    lda_config : dict
+    dataset_path
+        Path to the dataset file.
+    lda_path
+        Path to the lda model directory.
+    lda_config
         The configuration for the lda model.
-    topn_events : int
-        The number of top events to consider.
-
-    Returns
-    -------
-    dict[str, list]
-        A dictionary containing the calculated deltas.
-
+    tvd_l
+        Distance for the tuning parameters.
+    first_split_date
+        date of the first possible value of the tuning parameter.
+    force_new_tvd
+        If the TVD evaluation exists, should we override it or skip the evaluation?
+    first_split_idx
+        Index of the first possible value of the tuning parameter.
     """
     dataset = pd.read_pickle(dataset_path)
     dataset["date"] = pd.to_datetime(dataset["webPublicationDate"]).dt.date
@@ -145,8 +143,7 @@ def get_tvd_metrics(all_events, config, dataset_paths, lda_config, topn_events):
         func = partial(calculate_deltas_for_dataset, topn_events=topn_events, tvd_l=config["tvd_l"])
         results = tqdm(pool.starmap(func, zip(dataset_paths, all_events, tvds)), "Training LDA for datasets")
     deltas_df = pd.concat(results, ignore_index=True)
-    df = deltas_df[deltas_df["score_type"] == SIGNIFICANCE_SCORE]
-    grouped = df.groupby(["model_name", "top_n"])["delta"].mean().reset_index()
+    grouped = deltas_df.groupby(["model_name", "top_n"])["delta"].mean().reset_index()
     pivot_df = grouped.pivot(index="model_name", columns="top_n", values="delta").reset_index()
     pivot_df.columns = ["model_name"] + [f"top_{int(col)}_delta" for col in pivot_df.columns[1:]]  # type: ignore
     return deltas_df, pivot_df, tvds
@@ -193,7 +190,7 @@ def calculate_topic_distribution_from_base_path(
 
 def calculate_deltas_for_dataset(
     dataset_path: str, events: pd.DataFrame, tvd: pd.DataFrame, topn_events: int, tvd_l: int
-) -> dict[str, list]:
+) -> pd.DataFrame:
     """
     Calculate deltas for all possible methods.
 
@@ -217,7 +214,6 @@ def calculate_deltas_for_dataset(
         "delta": [],
         "date": [],
         "description": [],
-        "score_type": [],
         "top_n": [],
         "year": [],
         "section_id": [],
@@ -228,7 +224,7 @@ def calculate_deltas_for_dataset(
     dataset = pd.read_pickle(dataset_path)
     dataset["date"] = pd.to_datetime(dataset["webPublicationDate"]).dt.date
 
-    sorted_events = events.sort_values(by=f"yearly_{SIGNIFICANCE_SCORE}", ascending=False)
+    sorted_events = events.sort_values(by="significance_score", ascending=False)
 
     def get_closest_topk(indicator_max_date, topk_events):
         closest_event = None
@@ -250,7 +246,6 @@ def calculate_deltas_for_dataset(
         deltas["delta"].append(min_delta)
         deltas["date"].append(closest_event["date"])
         deltas["description"].append(closest_event["description"])
-        deltas["score_type"].append(SIGNIFICANCE_SCORE)
         deltas["top_n"].append(topk)
         deltas["year"].append(year)
         deltas["section_id"].append(section_id)

@@ -1,4 +1,4 @@
-"""Tools for evaluating a specific model."""
+"""Tools for evaluating a specific trained model."""
 import argparse
 import os
 from functools import partial
@@ -9,14 +9,7 @@ import pandas as pd
 import yaml
 from tqdm import tqdm
 
-from topic_transition.evaluation import (
-    calculate_avg_indicators_for_dataset,
-    calculate_significance_scores,
-    get_events,
-    plot_indicators,
-)
-
-SIGNIFICANCE_SCORE = "avg_tfidf_score"
+from topic_transition.evaluation import calculate_avg_indicators_for_dataset, calculate_significance_scores, get_events_with_scores
 
 
 def calculate_deltas_for_dataset(
@@ -25,31 +18,28 @@ def calculate_deltas_for_dataset(
     evaluation_path: str,
     topn_events: int,
     model_name: str,
-) -> dict[str, list]:
+) -> pd.DataFrame:
     """
-    Calculate deltas for all possible methods.
+    Calculate top-k deltas for a selected evaluation.
 
     Parameters
     ----------
-    training_path : str
-        The path to the training data.
-    topn_events : int
-        The number of top events to consider.
-    model_name : str
+    training_path
+        The path to the training data directory.
+    events:
+        List of events with dates and descriptions.
+    evaluation_path
+        Directory path where we save the results.
+    topn_events
+        The number of top events to consider for top-k delta.
+    model_name
         The name of the model.
-
-    Returns
-    -------
-    dict[str, list]
-        A dictionary containing the calculated deltas.
-
     """
     deltas: dict[str, list] = {
         "model_name": [],
         "delta": [],
         "date": [],
         "description": [],
-        "score_type": [],
         "top_n": [],
         "evaluation_path": [],
         "year": [],
@@ -60,7 +50,7 @@ def calculate_deltas_for_dataset(
 
     significant_events = []
 
-    sorted_events = events.sort_values(by=f"yearly_{SIGNIFICANCE_SCORE}", ascending=False)
+    sorted_events = events.sort_values(by="significance_score", ascending=False)
     most_significant_events = sorted_events.iloc[:topn_events]
     significant_events.append(most_significant_events)
 
@@ -72,7 +62,7 @@ def calculate_deltas_for_dataset(
     indicators = pd.read_csv(indicators_path)
     indicators["date"] = pd.to_datetime(indicators["date"]).dt.date
     indicator_max_date = indicators.loc[indicators["indicator_value"].argmax()]["date"]  # type: ignore
-    sorted_events = events.sort_values(by=f"yearly_{SIGNIFICANCE_SCORE}", ascending=False)
+    sorted_events = events.sort_values(by="significance_score", ascending=False)
 
     def get_closest_topk(indicator_max_date, topk_events):
         closest_event = None
@@ -89,12 +79,10 @@ def calculate_deltas_for_dataset(
         topk_events = sorted_events.iloc[:topk]
         assert "description" in topk_events.columns
         closest_event, min_delta = get_closest_topk(indicator_max_date, topk_events)
-        plot_indicators(indicators, closest_event, year, section_id, evaluation_path, SIGNIFICANCE_SCORE, topk)
         deltas["model_name"].append(model_name)
         deltas["delta"].append(min_delta)
         deltas["date"].append(closest_event["date"])
         deltas["description"].append(closest_event["description"])
-        deltas["score_type"].append(SIGNIFICANCE_SCORE)
         deltas["top_n"].append(topk)
         deltas["evaluation_path"].append(evaluation_path)
         deltas["year"].append(year)
@@ -108,11 +96,10 @@ def calculate_avg_indicators_for_dataset_from_training(training_path: str, event
 
     Parameters
     ----------
-    training_path : str
-        The file path to the directory containing the indicators data file.
-
-    events : pd.DataFrame
-        A DataFrame containing the event data, which includes a date column.
+    training_path
+        The file path to the directory containing the indicators csv file.
+    events
+        A DataFrame containing the event data.
     """
     indicators_path = os.path.join(training_path, "indicator_values.csv")
     indicators = pd.read_csv(indicators_path)
@@ -120,42 +107,42 @@ def calculate_avg_indicators_for_dataset_from_training(training_path: str, event
     return calculate_avg_indicators_for_dataset(indicators, events)
 
 
-def get_events_by_training(selected_training, dataset_base_path, events_base_path):
+def get_events_from_training(
+    selected_training: str, dataset_base_path: str, events_base_path: str
+) -> pd.DataFrame[str]:
     """
     Get events based on paths to training results.
 
     Parameters
     ----------
-    selected_training : str
+    selected_training
         The path or identifier for the selected training dataset.
-
-    dataset_base_path : str
+    dataset_base_path
         The base path where all datasets are stored.
-
-    events_base_path : str
+    events_base_path
         The base path where event data related to the trainings are stored.
     """
-    return get_events(
+    return get_events_with_scores(
         training_path=selected_training, dataset_base_path=dataset_base_path, events_base_path=events_base_path
     )
 
 
-def find_files_with_prefixes(selected_trainings, all_events, event_paths, evaluation_base_path):
+def find_files_with_prefixes(
+    selected_trainings: list[str], all_events: list[str], event_paths: list[str], evaluation_base_path: str
+) -> tuple[list[str], list[str], list[str]]:
     """
     Find files with given prefixes and adjust the `all_events` list.
 
     Parameters
     ----------
-    selected_trainings : list
+    selected_trainings
         A list of training file path prefixes.
-    all_events : list
+    all_events
         A list of event paths, one for each prefix in `selected_trainings`.
-
-    Returns
-    -------
-    tuple[list, list]
-        - A list of file paths matching the given prefixes.
-        - An adjusted all_events list corresponding to these file paths.
+    event_paths
+        A list of paths for event csvs.
+    evaluation_base_path
+        The root directory for all evaluation results.
     """
     adjusted_trainings = []
     adjusted_events = []
@@ -183,24 +170,14 @@ def find_files_with_prefixes(selected_trainings, all_events, event_paths, evalua
     return adjusted_trainings, adjusted_events, evaluation_paths
 
 
-def determine_training_type(selected_trainings):
+def determine_training_type(selected_trainings: str):
     """
     Determine the training type based on the training paths in selected_trainings.
 
     Parameters
     ----------
-    selected_trainings : list[str]
+    selected_trainings
         A list of training paths.
-
-    Returns
-    -------
-    str
-        The training type, which is one of "generated", "artificial_split", or "guardian".
-
-    Raises
-    ------
-    ValueError
-        If the training paths do not consistently contain one of the allowed training types.
     """
     TRAINING_TYPES = {"generated", "artificial_split", "guardian"}
     detected_types = set()
@@ -224,17 +201,12 @@ def determine_training_type(selected_trainings):
 
 def main(config: dict) -> None:
     """
-    Run script.
+    Evaluate all trainings of a selected model type, including multiple iterations of the same training.
 
     Parameters
     ----------
-    config : dict
+    config
         A dictionary containing the configuration for the main function.
-
-    Returns
-    -------
-    None
-        This function does not return any value, it performs calculations and saves the results.
     """
     model_name = config["model_name"]
     evaluations_base_path = config["evaluation_base_path"]
@@ -273,12 +245,10 @@ def main(config: dict) -> None:
     for evaluation_path in unique_evaluation_paths:
         deltas_df = all_deltas_df[all_deltas_df["evaluation_path"] == evaluation_path]
         deltas_df.to_csv(os.path.join(evaluation_path, "deltas.csv"), index=False)
-
-        df = deltas_df[deltas_df["score_type"] == SIGNIFICANCE_SCORE]
-        grouped = df.groupby(["model_name", "top_n"])["delta"].mean().reset_index()
+        grouped = deltas_df.groupby(["model_name", "top_n"])["delta"].mean().reset_index()
         pivot_df = grouped.pivot(index="model_name", columns="top_n", values="delta").reset_index()
         pivot_df.columns = ["model_name"] + [f"top_{int(col)}_delta" for col in pivot_df.columns[1:]]  # type: ignore
-        pivot_df.to_csv(os.path.join(evaluation_path, f"{SIGNIFICANCE_SCORE}_deltas.csv"), index=False)
+        pivot_df.to_csv(os.path.join(evaluation_path, "deltas.csv"), index=False)
 
         with Pool(processes=config["processes"]) as pool:
             func = partial(calculate_avg_indicators_for_dataset_from_training)

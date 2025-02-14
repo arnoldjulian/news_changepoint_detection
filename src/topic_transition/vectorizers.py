@@ -7,7 +7,7 @@ from scipy.sparse import csr_matrix
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from topic_transition.preprocessing import preprocess_text
+from topic_transition.data import preprocess_text
 
 
 class BaseVectorizer(ABC):

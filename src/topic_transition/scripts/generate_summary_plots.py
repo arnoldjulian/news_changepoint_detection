@@ -1,4 +1,4 @@
-"""Tools for summarizing the results of different evaluations."""
+"""Script for generating indicator value plots over multiple trainings."""
 import argparse
 
 import yaml

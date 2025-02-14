@@ -1,35 +1,33 @@
-"""Data functions."""
+"""Data processing-related functions."""
 import random
 
 import pandas as pd
+import spacy
+
+LANGUAGE_MODEL = spacy.load("en_core_web_sm")
+
 
 random.seed(42)
 
 
-def get_splits(df: pd.DataFrame, shuffle: bool = True, train_ratio: float = 0.8) -> tuple[list[int], list[int]]:
+def get_splits(articles: pd.DataFrame, shuffle: bool = True, train_ratio: float = 0.8) -> tuple[list[int], list[int]]:
     """
     Split the DataFrame indices into training and validation sets based on unique dates.
 
     Parameters
     ----------
-    df : pd.DataFrame
+    articles
         The DataFrame containing the data to be split.
-    shuffle : bool, optional
+    shuffle
         Whether to shuffle the indices within each date (default is True).
-    train_ratio : float, optional
+    train_ratio
         The ratio of samples to be included in the training set (default is 0.8).
-
-    Returns
-    -------
-    tuple[list[int], list[int]]
-        A tuple containing two lists of indices: train_idxs (indices for the training set)
-        and val_idxs (indices for the validation set).
     """
     train_idxs = []
     val_idxs = []
-    days = df["date"].unique()
+    days = articles["date"].unique()
     for day in days:
-        day_idxs = list(df[df["date"] == day].index)
+        day_idxs = list(articles[articles["date"] == day].index)
         if shuffle:
             random.shuffle(day_idxs)
         train_size = int(len(day_idxs) * train_ratio)
@@ -48,3 +46,22 @@ def get_splits(df: pd.DataFrame, shuffle: bool = True, train_ratio: float = 0.8)
         train_idxs.extend(train_list)
         val_idxs.extend(val_list)
     return train_idxs, val_idxs
+
+
+def preprocess_text(text: str) -> str:
+    """
+    Preprocesses text.
+
+    Parameters
+    ----------
+    text
+        Unprocessed article text.
+    """
+    text = text.lower()
+    doc = LANGUAGE_MODEL(text)
+    tokens = [
+        token.lemma_ for token in doc if not token.is_stop and token.is_alpha and not token.is_punct and len(token) > 2
+    ]
+
+    processed_text = " ".join(tokens)
+    return processed_text

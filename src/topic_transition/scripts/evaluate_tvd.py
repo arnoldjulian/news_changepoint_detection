@@ -13,7 +13,7 @@ from nltk.corpus import stopwords
 from tqdm import tqdm
 
 from topic_transition.evaluation import calculate_avg_indicators_for_dataset
-from topic_transition.tvd import SIGNIFICANCE_SCORE, get_tvd_metrics, load_all_events
+from topic_transition.tvd import get_tvd_metrics, load_all_events
 
 nltk.download("punkt")
 nltk.download("stopwords")
@@ -22,11 +22,11 @@ stop_words = set(stopwords.words("english"))
 
 def main(base_config: dict) -> None:
     """
-    Run script.
+    Evaluate TVD on selected datasets.
 
     Parameters
     ----------
-    config : dict
+    base_config : dict
         A dictionary containing the configuration for the main function.
 
     Returns
@@ -68,7 +68,7 @@ def main(base_config: dict) -> None:
             tvd.to_csv(indicator_path, index=False)
 
         deltas_df.to_csv(os.path.join(evaluation_path, "deltas.csv"), index=False)
-        pivot_df.to_csv(os.path.join(evaluation_path, f"{SIGNIFICANCE_SCORE}_deltas.csv"), index=False)
+        pivot_df.to_csv(os.path.join(evaluation_path, "deltas.csv"), index=False)
 
         with Pool(processes=config["processes"]) as pool:
             func = partial(calculate_avg_indicators_for_dataset)

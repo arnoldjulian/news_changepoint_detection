@@ -1,4 +1,4 @@
-"""Tools for summarizing the results of different evaluations."""
+"""Script for aggregating the metrics of different evaluations."""
 import argparse
 
 import yaml
@@ -12,7 +12,7 @@ def main(config: dict) -> None:
 
     Parameters
     ----------
-    config : dict
+    config
         A dictionary containing configuration settings, including:
             - "evaluations": A dictionary where keys are model names and values
                 are lists of paths to directories containing evaluation data.

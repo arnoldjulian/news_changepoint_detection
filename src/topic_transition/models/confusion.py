@@ -1,17 +1,26 @@
-"""Definition for the Confusion models."""
+"""Definition for the Confusion model."""
 import torch
 import torch.nn as nn
 
 
 class FFConfusion(nn.Module):
-    """Simple confusion model."""
+    """Feedforward confusion model."""
 
-    def __init__(self, input_dim: int, categories: int):
-        """Init Simplest confusion model."""
+    def __init__(self, embedding_dim: int, grid_size: int):
+        """Create model layers.
+
+        Parameters
+        ----------
+        embedding_dim
+            Size of the input embedding.
+        grid_size
+            Number of discrete values for the tuning parameter in the confusion method.
+
+        """
         super(FFConfusion, self).__init__()
-        self.fc1 = nn.Linear(input_dim, categories)
+        self.fc1 = nn.Linear(embedding_dim, grid_size)
 
     def forward(self, input_features: torch.Tensor):
-        """Forward."""
+        """Perform a forward pass and return a prediction for each value of the tuning parameter."""
         output = torch.sigmoid(self.fc1(input_features))
         return output

@@ -1,4 +1,4 @@
-"""Loss-related tools."""
+"""Definition of weighted BCE loss."""
 
 import numpy as np
 import pandas as pd
@@ -15,11 +15,11 @@ class BCEWithWeights(nn.Module):
 
         Parameters
         ----------
-        data : pd.DataFrame
+        data
             The input data as a pandas DataFrame.
-        dtype : torch.dtype
+        dtype
             The data type for calculations.
-        device : torch.device
+        device
             The device (CPU or GPU) to perform calculations on.
         """
         super(BCEWithWeights, self).__init__()
@@ -39,17 +39,12 @@ class BCEWithWeights(nn.Module):
 
         Parameters
         ----------
-        model_outputs : torch.Tensor
+        model_outputs
             The output tensor from the model, representing the predicted probabilities.
-        targets : torch.Tensor
+        targets
             The tensor containing the true target values.
-        **kwargs : dict
+        **kwargs
             Additional optional arguments.
-
-        Returns
-        -------
-        torch.Tensor
-            The mean loss calculated using binary cross-entropy.
         """
         if "split_idx" in kwargs:
             split_idx = int(kwargs["split_idx"])  # type: ignore

@@ -7,43 +7,33 @@ import pandas as pd
 from topic_transition.utils import find_matching_directories
 
 
-def bold_max_min_in_column(value, std, max_value):
+def bold_max_min_in_column(mean, stde, optimal_value):
     """
     Return bolded value.
 
     Parameters
     ----------
-    value : float
+    mean : float
         The numerical value to format.
-    max_value : float
+    stde:
+        Standard Error.
+    optimal_value : float
         The maximum value in the column.
-    is_average : bool
-        Flag indicating if the value is an average value.
-
-    Returns
-    -------
-    str
-        The formatted value; bold if it matches the max_value.
     """
-    formatted_value = f"{value:.2f} ± {std:.2f}"
-    return f"\\textbf{{{formatted_value}}}" if value == max_value else formatted_value
+    formatted_value = f"{mean:.2f} ± {stde:.2f}"
+    return f"\\textbf{{{formatted_value}}}" if mean == optimal_value else formatted_value
 
 
-def split_model_name(model_name2):
+def split_model_name(model_name: str) -> tuple[str, str, float | int]:
     """
     Split the model_name2 into base model and L value.
 
     Parameters
     ----------
-    model_name2 : str
+    model_name
         The complete model name.
-
-    Returns
-    -------
-    tuple
-        A tuple containing the base model and L value.
     """
-    parts = model_name2.split(",L=")
+    parts = model_name.split(",L=")
     base_model = parts[0]
 
     if len(parts) > 1:
@@ -53,21 +43,23 @@ def split_model_name(model_name2):
         else:
             l_value_weight = int(l_value)
     else:
-        l_value_weight = float("inf")  # Default to inf if no L value
+        raise ValueError(f"Invalid model name: {model_name}")
 
     return base_model, l_value, l_value_weight
 
 
-def generate_delta_latex_table(summary, output_path, top_n_delta):
+def generate_delta_latex_table(summary: dict, output_path: str, top_n_delta: int):
     """
     Save latex snippet of the indicator deltas table.
 
     Parameters
     ----------
-    summary : pandas.DataFrame
+    summary
         DataFrame containing delta metrics for different models.
-    output_path : str
+    output_path
         Path where the generated LaTeX table will be saved.
+    top_n_delta
+        Highest top-k delta value to include in the table.
     """
     min_top_deltas = [summary[f"top_{i}_delta_mean"].min() for i in range(1, top_n_delta + 1)]
 
@@ -95,7 +87,7 @@ def generate_delta_latex_table(summary, output_path, top_n_delta):
         file.write(table_content)
 
 
-def summarize_metrics(config):
+def summarize_metrics(config: dict):
     """Generate the delta metrics table."""
     evaluated_models = config["evaluations"]
     summary_path = config["summary_path"]
@@ -134,6 +126,5 @@ def summarize_metrics(config):
     latex_output_2 = os.path.join(summary_path, "delta_table.tex")
     split_results = summary["model_name2"].apply(split_model_name)
     summary[["base_model", "l_value", "l_value_weight"]] = pd.DataFrame(split_results.tolist(), index=summary.index)
-    # Sort the DataFrame by base_model and l_value_weight
     summary = summary.sort_values(by=["base_model", "l_value_weight"])
     generate_delta_latex_table(summary, latex_output_2, config["top_n_delta"])

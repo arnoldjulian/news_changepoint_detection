@@ -8,12 +8,13 @@ from matplotlib import pyplot as plt
 from matplotlib.dates import DateFormatter
 
 
-def stde(x):
+def stde(arr: np.array) -> float:
     """Get standard error."""
-    return np.std(x) / np.sqrt(len(x))
+    return np.std(arr) / np.sqrt(len(arr))
 
 
-def plot_indicators(events, grouped, indicators, output_root_path, show_max_tvd, xticks_format="YY-MM"):
+def plot_indicators(events: pd.DataFrame, grouped: pd.api.typing.DataFrameGroupBy,
+                    indicators: pd.DataFrame, output_root_path: str, show_max_tvd: bool, xticks_format: str = "YY-MM"):
     """Plot indicators for all times, sections and models."""
     for key, group in list(grouped):
         agg_indicators = indicators["_".join(key[:3])]
@@ -40,7 +41,6 @@ def plot_indicators(events, grouped, indicators, output_root_path, show_max_tvd,
         else:
             ax.xaxis.set_major_formatter(DateFormatter("%Y"))
 
-
         max_mean_date = agg_indicators.loc[agg_indicators["mean"].idxmax(), "date"]
 
         ax.axvline(
@@ -57,31 +57,21 @@ def plot_indicators(events, grouped, indicators, output_root_path, show_max_tvd,
                 assert baseline_key in indicators
                 baseline_agg_indicators = indicators[baseline_key]
                 max_mean_baseline_date = baseline_agg_indicators.loc[baseline_agg_indicators["mean"].idxmax(), "date"]
-                overlap = max_mean_date == max_mean_baseline_date
                 ax.axvline(
                     max_mean_baseline_date,
                     color="red",
                     linestyle="dotted",
                     label="Max Mean TVD indicator value",
-                    #alpha=0.5 if overlap else 1
                 )
-            else:
-                max_mean_baseline_date = None
-        else:
-            max_mean_baseline_date = None
 
         if events is not None:
             event_date = group["event_date"].iloc[0]
             if not pd.isna(event_date):
-                overlap = max_mean_date == event_date
-                if max_mean_baseline_date is not None:
-                    overlap = overlap or max_mean_baseline_date == event_date
                 ax.axvline(
                     event_date,
                     color="green",
                     linestyle=":",
                     label="Event date",
-                    #alpha=0.5 if overlap else 1
                 )
 
         output_path = os.path.join(output_root_path, key[2])
@@ -90,8 +80,8 @@ def plot_indicators(events, grouped, indicators, output_root_path, show_max_tvd,
         plt.savefig(os.path.join(output_path, f"{key[0]}_{key[1]}_{key[2]}.jpg"))
 
 
-def aggregate_indicators(grouped, rescale_models):
-    """Calculate mean and stde indicators for all 5 iterations."""
+def aggregate_indicators(grouped: pd.api.typing.DataFrameGroupBy, rescale_models: bool) -> dict:
+    """Calculate mean and stde indicators for all iterations."""
     group_sizes = grouped.size()
 
     assert np.all((group_sizes == 5).values)
@@ -114,7 +104,7 @@ def aggregate_indicators(grouped, rescale_models):
     return indicators
 
 
-def get_indicators(config, events):
+def get_indicators(config: dict, events: pd.DataFrame) -> pd.DataFrame:
     """Get DataFrame with all indicators."""
     indicators_data = {
         "time_interval": [],
@@ -169,7 +159,7 @@ def get_indicators(config, events):
     return indicator_df
 
 
-def get_events(manual_events_path, significant_events_path):
+def get_events(manual_events_path: str, significant_events_path: str) -> pd.DataFrame | None:
     """Get all events if a path is given."""
     if manual_events_path:
         events = pd.read_csv(manual_events_path)
@@ -197,7 +187,7 @@ def get_events(manual_events_path, significant_events_path):
     return events
 
 
-def generate_summary_plots(config):
+def generate_summary_plots(config: dict):
     """Plot aggregate indicator values."""
     summary_path = config["summary_path"]
     manual_events_path = config["manual_events_path"] if "manual_events_path" in config else None

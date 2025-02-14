@@ -14,7 +14,7 @@ import torch
 from gensim import corpora
 from gensim.models import LdaModel
 
-from topic_transition.preprocessing import preprocess_text
+from topic_transition.data import preprocess_text
 
 
 def get_dates_for_interval(start_date: date, end_date: date) -> list[date]:
@@ -69,13 +69,8 @@ def get_last_day_of_month(dt: datetime.date) -> datetime.date:
 
     Parameters
     ----------
-    dt : datetime.date
+    dt
         A date object representing the input date.
-
-    Returns
-    -------
-    datetime.date
-        A date object representing the last day of the month for the given date.
     """
     last_day = calendar.monthrange(dt.year, dt.month)[1]
     return datetime.date(dt.year, dt.month, last_day)
@@ -92,11 +87,6 @@ def total_variation_distance(arr1: np.ndarray, arr2: np.ndarray) -> np.ndarray:
 
     arr2 : np.ndarray
          Input array 2.
-
-    Returns
-    -------
-    np.ndarray
-         The total variation distance between arr1 and arr2.
 
     """
     if len(arr1.shape) == 1:
@@ -119,16 +109,10 @@ def get_f1_scores(pred: np.ndarray, ref: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    pred: np.ndarray
+    pred
         An array containing the predicted values.
-    ref: np.ndarray
+    ref
         An array containing the reference values.
-
-    Returns
-    -------
-    f1s: np.ndarray
-        An array containing the F1 scores.
-
     """
     common_tokens = pred & ref
     len_arr = np.vectorize(len)
@@ -154,12 +138,7 @@ def increment_path_number(path: str) -> str:
     Parameters
     ----------
     path : str
-        The folder name or file path.
-
-    Returns
-    -------
-    str
-        The updated folder name with an incremented or appended numerical suffix.
+        The folder name or file path
     """
     training_paths = glob.glob(path + "_num_*")
     training_nums = [int(re.match(r".*_num_(\d+)$", tr_path).group(1)) for tr_path in training_paths]
@@ -177,11 +156,6 @@ def find_matching_directories(base_path: str) -> list:
     ----------
     base_path : str
         The base path to search for directories that match the given pattern
-
-    Returns
-    -------
-    list
-        A list of directory paths that match the base path pattern
     """
     search_pattern = base_path + "_*"
     matching_paths = glob.glob(search_pattern)
