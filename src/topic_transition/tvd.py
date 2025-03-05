@@ -1,6 +1,6 @@
 """Tools for calculating Total Variation Distance and."""
 import os
-from datetime import timedelta, date
+from datetime import date, timedelta
 from functools import partial
 from multiprocessing import Pool
 
@@ -87,7 +87,6 @@ def calculate_topict_distribution_tvd(
     first_split_date: str,
     force_new_tvd: bool = False,
     first_split_idx: int | None = None,
-    **kwargs
 ):
     """
     Calculate deltas for all possible methods.
@@ -175,7 +174,14 @@ def load_all_events(config):
 
 
 def calculate_topic_distribution_from_base_path(
-    dataset_path, lda_base_path, selected_month, lda_config, tvd_l, first_split_date, force_new_tvd, first_split_idx: int | None = None
+    dataset_path,
+    lda_base_path,
+    selected_month,
+    lda_config,
+    tvd_l,
+    first_split_date,
+    force_new_tvd,
+    first_split_idx: int | None = None,
 ):
     """
     Calculate LDA toopic distributions using dataset and root path to ldas.
@@ -199,7 +205,14 @@ def calculate_topic_distribution_from_base_path(
     lda_path = os.path.join(lda_base_path, year)
     lda_path = os.path.join(lda_path, section_id)
     return calculate_topict_distribution_tvd(
-        dataset_path, lda_path, selected_month, lda_config, tvd_l, first_split_date, force_new_tvd, first_split_idx=first_split_idx
+        dataset_path,
+        lda_path,
+        selected_month,
+        lda_config,
+        tvd_l,
+        first_split_date,
+        force_new_tvd,
+        first_split_idx=first_split_idx,
     )
 
 

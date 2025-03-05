@@ -4,17 +4,12 @@ import argparse
 import copy
 import os
 from datetime import date, timedelta
-from functools import partial
-from multiprocessing import Pool
 
 import nltk
-import pandas as pd
 import yaml
 from dateutil.relativedelta import relativedelta
 from nltk.corpus import stopwords
-from tqdm import tqdm
 
-from topic_transition.evaluation import calculate_avg_indicators_for_dataset
 from topic_transition.tvd import get_tvd_metrics, load_all_events
 
 nltk.download("punkt")
@@ -83,15 +78,6 @@ def main(base_config: dict) -> None:
             tvd.to_csv(indicator_path, index=False)
 
         deltas_df.to_csv(os.path.join(evaluation_path, "deltas.csv"), index=False)
-
-        with Pool(processes=config["processes"]) as pool:
-            func = partial(calculate_avg_indicators_for_dataset)
-            averages = tqdm(pool.starmap(func, zip(tvds, all_events)))
-
-        concatenated_df = pd.concat(averages, ignore_index=True)
-        mean_values = concatenated_df.mean()
-        average_of_averages_df = pd.DataFrame(mean_values).T
-        average_of_averages_df.to_csv(os.path.join(evaluation_path, "average_of_averages.csv"), index=False)
 
 
 if __name__ == "__main__":

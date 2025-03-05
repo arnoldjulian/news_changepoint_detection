@@ -59,12 +59,11 @@ def generate_delta_latex_table(summary: dict, output_path: str):
     output_path
         Path where the generated LaTeX table will be saved.
     """
-
     table_content = "\\begin{table}[htbp]\n\\centering\n"
     table_content += "\\caption{Delta metrics for different models}\n\\small\n"
     table_content += "\\begin{tabular}{lc}\n\\toprule\n"
     table_content += "model name &"
-    table_content += f"delta ± stde"
+    table_content += "delta ± stde"
     table_content += "\\\\\n\\midrule\n"
 
     for _, row in summary.iterrows():
@@ -89,29 +88,23 @@ def summarize_metrics(config: dict):
     for model_name, paths in evaluated_models.items():
         if not isinstance(paths, list):
             paths = find_matching_directories(paths)
-
         list_of_dfs = []
         for path in paths:
             df = pd.read_csv(os.path.join(path, "deltas.csv"))
             list_of_dfs.append(df)
-
         delta_df = pd.concat(list_of_dfs)
-
         delta_columns = [col for col in delta_df.columns if "delta" in col]
 
         def stde(x):
             return np.std(x) / np.sqrt(len(x))
 
         agg_dict = {column: ["mean", stde] for column in delta_columns}
-
         summary_df = delta_df.groupby("model_name").agg(agg_dict).reset_index()  # type: ignore
         summary_df.columns = [
             "_".join(col).strip() if col[1] else col[0] for col in summary_df.columns.values
         ]  # type: ignore
-
         summary_df["model_name2"] = model_name
         all_summaries.append(summary_df)
-
         model_summary_path = os.path.join(summary_path, model_name)
         os.makedirs(model_summary_path, exist_ok=True)
     summary = pd.concat(all_summaries, ignore_index=True)

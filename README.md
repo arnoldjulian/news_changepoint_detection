@@ -38,7 +38,7 @@ make train L=180 dataset=artificial_split model=ff_embed
 For the real world data:
 
 ```bash
-make train L=180 dataset=guardian_extended model=ff_embed
+make train L=180 dataset=guardian model=ff_embed
 ```
 
 In the Makefile you can find exactly what configuration files are used for each training.

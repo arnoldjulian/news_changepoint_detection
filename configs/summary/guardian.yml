@@ -1,0 +1,32 @@
+evaluations:
+  "random,L=180": [
+    "dvc/evaluations/guardian/random",
+    "dvc/evaluations/guardian/random_num_1",
+    "dvc/evaluations/guardian/random_num_2",
+    "dvc/evaluations/guardian/random_num_3",
+    "dvc/evaluations/guardian/random_num_4",
+  ]
+  "TVD,L=180": [
+    "dvc/evaluations/guardian/tvd_l180",
+    "dvc/evaluations/guardian/tvd_l180_num_1",
+    "dvc/evaluations/guardian/tvd_l180_num_2",
+    "dvc/evaluations/guardian/tvd_l180_num_3",
+    "dvc/evaluations/guardian/tvd_l180_num_4",
+  ]
+  "FF,embedding,L=180": [
+    "dvc/evaluations/guardian/confusion_ff_embed_l180",
+    "dvc/evaluations/guardian/confusion_ff_embed_l180_num_1",
+    "dvc/evaluations/guardian/confusion_ff_embed_l180_num_2",
+    "dvc/evaluations/guardian/confusion_ff_embed_l180_num_3",
+    "dvc/evaluations/guardian/confusion_ff_embed_l180_num_4",
+  ]
+  "distilroberta1,L=180": [
+    "dvc/evaluations/guardian/distilroberta",
+    "dvc/evaluations/guardian/distilroberta_num_1",
+    "dvc/evaluations/guardian/distilroberta_num_2",
+    "dvc/evaluations/guardian/distilroberta_num_3",
+    "dvc/evaluations/guardian/distilroberta_num_4",
+  ]
+summary_path: "dvc/summaries/guardian"
+rescale_models: True
+xticks_format: "YY-MM"

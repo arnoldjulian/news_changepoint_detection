@@ -1,5 +1,5 @@
 training_name: distilroberta
-dataset_base_path: "dvc/datasets/guardian_extended"
+dataset_base_path: "dvc/datasets/guardian"
 training_base_path: "dvc/trainings/guardian_months"
 evaluation_base_path: "dvc/evaluations/guardian_months"
 model_name: "distilroberta"

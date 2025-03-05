@@ -1,16 +1,16 @@
 """Tools for training with different models."""
 import logging
 import os
+import random
 import re
 from datetime import date, timedelta
-import random
 
 import pandas as pd
 import yaml
 from dateutil.relativedelta import relativedelta
 
 from topic_transition.training.confusion import train_confusion
-from topic_transition.utils import increment_path_number, get_dates_for_interval
+from topic_transition.utils import get_dates_for_interval, increment_path_number
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -22,7 +22,7 @@ MAX_CHUNK_SIZE = {
     "sentence-t5-base": 512,
     "all-mpnet-base-v2": 384,
     "all-distilroberta-v1": 128,
-    "BAAI/llm-embedder": 512
+    "BAAI/llm-embedder": 512,
 }
 
 
@@ -45,7 +45,6 @@ def chunk_data(data: pd.DataFrame, chunk_size: int) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Processed dataframe with 'full_text' split into chunks if applicable.
     """
-
     # If chunk_size is not set, return the original dataframe
     if not chunk_size:
         return data
@@ -61,14 +60,16 @@ def chunk_data(data: pd.DataFrame, chunk_size: int) -> pd.DataFrame:
         # Calculate the number of chunks
         for i in range(0, len(words), chunk_size):
             # Create text chunk
-            chunk = " ".join(words[i:i + chunk_size])
+            chunk = " ".join(words[i : i + chunk_size])  # noqa: E203
 
             # Create a new row and append to the new_rows list
-            new_rows.append({
-                "date": row["date"],  # Keep the date
-                "webTitle": row["webTitle"],
-                "full_text": chunk,  # The current chunk
-            })
+            new_rows.append(
+                {
+                    "date": row["date"],  # Keep the date
+                    "webTitle": row["webTitle"],
+                    "full_text": chunk,  # The current chunk
+                }
+            )
 
     # Create a new dataframe from the collected rows
     new_data = pd.DataFrame(new_rows)

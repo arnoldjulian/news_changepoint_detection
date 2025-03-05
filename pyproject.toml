@@ -28,7 +28,9 @@ dependencies = [
   "pynvml",
   "spacy",
   "plotly",
-  "kaleido"
+  "kaleido",
+  "httpx",
+  "bs4"
 ]
 
 [project.optional-dependencies]

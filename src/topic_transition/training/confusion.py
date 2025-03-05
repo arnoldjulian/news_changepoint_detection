@@ -266,9 +266,7 @@ def calculate_batch_side_accuracy(split_labels: Tensor, split_predictions: Tenso
     return batch_neg_accuracies
 
 
-def train_confusion(
-    data: pd.DataFrame, train_out: str, config: dict, dataset_path: str, vectorizer_type: str
-) -> None:
+def train_confusion(data: pd.DataFrame, train_out: str, config: dict, dataset_path: str, vectorizer_type: str) -> None:
     """
     Train a model with confusion scheme.
 
@@ -340,9 +338,7 @@ def train_confusion(
     loss_df.to_csv(os.path.join(train_out, "per_epoch_losses.csv"), index=False)
     indicators_path = os.path.join(train_out, "indicator_values.csv")
     model = torch.load(os.path.join(train_out, "best_model_checkpoint.pth"), weights_only=False)
-    indicator_df = calculate_indicators(
-        val_loader, model, device, dates, first_split_idx, split_distance
-    )
+    indicator_df = calculate_indicators(val_loader, model, device, dates, first_split_idx, split_distance)
     indicator_df.to_csv(indicators_path, index=False)
     loss_df["train"] = loss_df["train"] / loss_df["train"].iloc[0]
     loss_df["val"] = loss_df["val"] / loss_df["val"].iloc[0]

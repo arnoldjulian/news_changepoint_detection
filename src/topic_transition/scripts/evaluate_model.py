@@ -9,8 +9,6 @@ import pandas as pd
 import yaml
 from tqdm import tqdm
 
-from topic_transition.evaluation import calculate_avg_indicators_for_dataset
-
 
 def calculate_deltas_for_dataset(
     training_path: str,
@@ -116,24 +114,6 @@ def find_files_with_prefixes(
     return adjusted_trainings, adjusted_events, evaluation_paths
 
 
-def calculate_avg_indicators_for_dataset_from_training(training_path: str, events: pd.DataFrame) -> pd.DataFrame:
-    """
-    Calculate average indicators.
-
-    Parameters
-    ----------
-    training_path : str
-        The file path to the directory containing the indicators data file.
-
-    events : pd.DataFrame
-        A DataFrame containing the event data, which includes a date column.
-    """
-    indicators_path = os.path.join(training_path, "indicator_values.csv")
-    indicators = pd.read_csv(indicators_path)
-    indicators["date"] = pd.to_datetime(indicators["date"]).dt.date
-    return calculate_avg_indicators_for_dataset(indicators, events)
-
-
 def main(config: dict) -> None:
     """
     Evaluate all trainings of a selected model type, including multiple iterations of the same training.
@@ -165,10 +145,7 @@ def main(config: dict) -> None:
     )
 
     with Pool(processes=config["processes"]) as pool:
-        func = partial(
-            calculate_deltas_for_dataset,
-            model_name=model_name
-        )
+        func = partial(calculate_deltas_for_dataset, model_name=model_name)
         results = tqdm(pool.starmap(func, zip(selected_trainings, all_events, evaluation_paths)))
 
     all_deltas_df = pd.concat(results, ignore_index=True)
@@ -177,15 +154,6 @@ def main(config: dict) -> None:
     for evaluation_path in unique_evaluation_paths:
         deltas_df = all_deltas_df[all_deltas_df["evaluation_path"] == evaluation_path]
         deltas_df.to_csv(os.path.join(evaluation_path, "deltas.csv"), index=False)
-
-        with Pool(processes=config["processes"]) as pool:
-            func = partial(calculate_avg_indicators_for_dataset_from_training)
-            averages = tqdm(pool.starmap(func, zip(selected_trainings, all_events)))
-
-        concatenated_df = pd.concat(averages, ignore_index=True)
-        mean_values = concatenated_df.mean()
-        average_of_averages_df = pd.DataFrame(mean_values).T
-        average_of_averages_df.to_csv(os.path.join(evaluation_path, "average_of_averages.csv"), index=False)
 
 
 if __name__ == "__main__":
