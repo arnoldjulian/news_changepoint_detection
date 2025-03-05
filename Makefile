@@ -21,27 +21,15 @@ data_checks:
 
 # Train command with parameters
 train:
-ifeq ($(L),inf)
-	python src/topic_transition/scripts/train_on_multiple_datasets.py configs/training/multi/$(dataset)/confusion_$(model).yml
-else
 	python src/topic_transition/scripts/train_on_multiple_datasets.py configs/training/multi/$(dataset)/confusion_$(model)_l$(L).yml
-endif
 
 # Evaluate command with parameters
 eval:
-ifeq ($(L),inf)
-	python src/topic_transition/scripts/evaluate_model.py configs/evaluation/$(dataset)/confusion_$(model).yml
-else
 	python src/topic_transition/scripts/evaluate_model.py configs/evaluation/$(dataset)/confusion_$(model)_l$(L).yml
-endif
 
 # Special case for evaluate_tvd
 eval_tvd:
-ifeq ($(L),inf)
-	python src/topic_transition/scripts/evaluate_tvd.py configs/evaluation/$(dataset)/tvd.yml
-else
 	python src/topic_transition/scripts/evaluate_tvd.py configs/evaluation/$(dataset)/tvd$(L).yml
-endif
 
 summarize:
 	python src/topic_transition/scripts/summarize.py configs/summary/$(dataset).yml
@@ -53,8 +41,4 @@ profile:
 	python src/topic_transition/scripts/profile_data.py dvc/datasets/$(dataset)/$(time_interval)/$(section).pkl configs/profiling/config_$(dataset).yml dvc/profilings/$(dataset)
 
 comparison_plots:
-ifeq ($(L),inf)
-	python src/topic_transition/scripts/generate_comparison_plots.py configs/training/multi/$(dataset)/confusion_$(model).yml configs/evaluation/$(dataset)/tvd.yml
-else
 	python src/topic_transition/scripts/generate_comparison_plots.py configs/training/multi/$(dataset)/confusion_$(model)_l$(L).yml configs/evaluation/$(dataset)/tvd$(L).yml
-endif

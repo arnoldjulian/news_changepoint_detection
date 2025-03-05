@@ -1,11 +1,12 @@
 """Tools for calculating Total Variation Distance and."""
 import os
-from datetime import timedelta
+from datetime import timedelta, date
 from functools import partial
 from multiprocessing import Pool
 
 import numpy as np
 import pandas as pd
+from dateutil.relativedelta import relativedelta
 from tqdm import tqdm
 
 from topic_transition.evaluation import get_events_from_path
@@ -35,7 +36,7 @@ def calculate_dataset_tvd(
 
     if first_split_idx is None:
         if first_split_date is None:
-            first_split_idx = 0
+            first_split_idx = dist
         else:
             dates_mm_dd = [date.strftime("%m-%d") for date in dates]
             if first_split_date not in dates_mm_dd:
@@ -80,14 +81,16 @@ def calculate_dataset_tvd(
 def calculate_topict_distribution_tvd(
     dataset_path: str,
     lda_path: str,
+    selected_month: str | None,
     lda_config: dict,
     tvd_l: float,
     first_split_date: str,
     force_new_tvd: bool = False,
     first_split_idx: int | None = None,
+    **kwargs
 ):
     """
-    Calculate deltas for all possible methods on a selected dataset.
+    Calculate deltas for all possible methods.
 
     Parameters
     ----------
@@ -109,6 +112,15 @@ def calculate_topict_distribution_tvd(
     dataset = pd.read_pickle(dataset_path)
     dataset["date"] = pd.to_datetime(dataset["webPublicationDate"]).dt.date
 
+    if selected_month is not None:
+        selected_year, selected_month = selected_month.split("-")
+
+        start_date = date(int(selected_year), int(selected_month), 1)
+        end_date = start_date + relativedelta(months=1)
+        start_date = start_date - timedelta(days=tvd_l)
+        end_date = end_date + timedelta(days=tvd_l)
+        dataset = dataset[(dataset["date"] >= start_date) & (dataset["date"] < end_date)]
+
     os.makedirs(lda_path, exist_ok=True)
     corpus, lda_model = load_or_train_lda(dataset, force_new_tvd, lda_config, lda_path)
 
@@ -120,7 +132,7 @@ def calculate_topict_distribution_tvd(
     )
 
 
-def get_tvd_metrics(all_events, config, dataset_paths, lda_config, topn_events):
+def get_tvd_metrics(all_events, config, dataset_paths, lda_config):
     """Calculate quality metrics for TVD for specific datasets."""
     if config["tvd_l"] == "inf":
         tvd_l = np.inf
@@ -138,29 +150,32 @@ def get_tvd_metrics(all_events, config, dataset_paths, lda_config, topn_events):
             force_new_tvd=config["force_new_tvd"],
             first_split_idx=first_split_idx,
         )
-        tvds = pool.starmap(func, zip(dataset_paths, lda_paths))
+        if "selected_months" in config:
+            selected_months = config["selected_months"]
+        else:
+            selected_months = [None for _ in range(len(dataset_paths))]
+
+        tvds = tqdm(pool.starmap(func, zip(dataset_paths, lda_paths, selected_months)), "Calculating TVDs")
     with Pool(processes=config["processes"]) as pool:
-        func = partial(calculate_deltas_for_dataset, topn_events=topn_events, tvd_l=config["tvd_l"])
-        results = tqdm(pool.starmap(func, zip(dataset_paths, all_events, tvds)), "Training LDA for datasets")
+        func = partial(calculate_deltas_for_dataset, tvd_l=config["tvd_l"])
+        path_parts = [dataset_path.split(os.path.sep)[-2:] for dataset_path in dataset_paths]
+        years = [parts[0] for parts in path_parts]
+        section_ids = [parts[1].split(".")[0] for parts in path_parts]
+        results = tqdm(pool.starmap(func, zip(years, section_ids, all_events, tvds)), "Calculating deltas")
     deltas_df = pd.concat(results, ignore_index=True)
-    grouped = deltas_df.groupby(["model_name", "top_n"])["delta"].mean().reset_index()
-    pivot_df = grouped.pivot(index="model_name", columns="top_n", values="delta").reset_index()
-    pivot_df.columns = ["model_name"] + [f"top_{int(col)}_delta" for col in pivot_df.columns[1:]]  # type: ignore
-    return deltas_df, pivot_df, tvds
+    return deltas_df, tvds
 
 
 def load_all_events(config):
     """Load all event DataFrames for each dataset."""
-    topn_events = config["topn_events"]
-    dataset_paths = config["selected_datasets"]
     with Pool(processes=config["processes"]) as pool:
         events_paths = config["selected_events"]
-        all_events = pool.starmap(get_events_from_path, zip(dataset_paths, events_paths))
-    return all_events, topn_events
+        all_events = pool.starmap(get_events_from_path, zip(events_paths))
+    return all_events
 
 
 def calculate_topic_distribution_from_base_path(
-    dataset_path, lda_base_path, lda_config, tvd_l, first_split_date, force_new_tvd, first_split_idx: int | None = None
+    dataset_path, lda_base_path, selected_month, lda_config, tvd_l, first_split_date, force_new_tvd, first_split_idx: int | None = None
 ):
     """
     Calculate LDA toopic distributions using dataset and root path to ldas.
@@ -184,13 +199,13 @@ def calculate_topic_distribution_from_base_path(
     lda_path = os.path.join(lda_base_path, year)
     lda_path = os.path.join(lda_path, section_id)
     return calculate_topict_distribution_tvd(
-        dataset_path, lda_path, lda_config, tvd_l, first_split_date, force_new_tvd, first_split_idx=first_split_idx
+        dataset_path, lda_path, selected_month, lda_config, tvd_l, first_split_date, force_new_tvd, first_split_idx=first_split_idx
     )
 
 
 def calculate_deltas_for_dataset(
-    dataset_path: str, events: pd.DataFrame, tvd: pd.DataFrame, topn_events: int, tvd_l: int
-) -> pd.DataFrame:
+    year: str, section_id: str, events: pd.DataFrame, tvd: pd.DataFrame, tvd_l: int
+) -> dict[str, list]:
     """
     Calculate deltas for all possible methods.
 
@@ -214,19 +229,11 @@ def calculate_deltas_for_dataset(
         "delta": [],
         "date": [],
         "description": [],
-        "top_n": [],
         "year": [],
         "section_id": [],
     }
 
-    year, section_id = dataset_path.split(os.path.sep)[-2:]
-    section_id = section_id[:-4]
-    dataset = pd.read_pickle(dataset_path)
-    dataset["date"] = pd.to_datetime(dataset["webPublicationDate"]).dt.date
-
-    sorted_events = events.sort_values(by="significance_score", ascending=False)
-
-    def get_closest_topk(indicator_max_date, topk_events):
+    def get_closest(indicator_max_date, topk_events):
         closest_event = None
         min_delta = None
         for _, event in topk_events.iterrows():
@@ -236,17 +243,13 @@ def calculate_deltas_for_dataset(
                 min_delta = delta
         return closest_event, min_delta
 
-    for topk in range(1, topn_events + 1):
-        topk_events = sorted_events.iloc[:topk]
-        indicator_max_idx = tvd["indicator_value"].argmax()
-        indicator_max_date = tvd.loc[indicator_max_idx, "date"]  # type: ignore
-        closest_event, min_delta = get_closest_topk(indicator_max_date, topk_events)
-        min_delta = abs((closest_event["date"] - indicator_max_date).days)
-        deltas["model_name"].append(f"tvd_{tvd_l}")
-        deltas["delta"].append(min_delta)
-        deltas["date"].append(closest_event["date"])
-        deltas["description"].append(closest_event["description"])
-        deltas["top_n"].append(topk)
-        deltas["year"].append(year)
-        deltas["section_id"].append(section_id)
+    indicator_max_idx = tvd["indicator_value"].argmax()
+    indicator_max_date = tvd.loc[indicator_max_idx, "date"]
+    closest_event, min_delta = get_closest(indicator_max_date, events)
+    deltas["model_name"].append(f"tvd_{tvd_l}")
+    deltas["delta"].append(min_delta)
+    deltas["date"].append(closest_event["date"])
+    deltas["description"].append(closest_event["description"])
+    deltas["year"].append(year)
+    deltas["section_id"].append(section_id)
     return pd.DataFrame.from_dict(deltas)

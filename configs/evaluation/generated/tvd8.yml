@@ -1,6 +1,6 @@
-training_name: tvd10
+training_name: tvd8
 evaluation_base_path: "dvc/evaluations/generated"
-model_name: "tvd10"
+model_name: "tvd8"
 first_split_idx: 2
 lda:
   num_topics: 20
@@ -38,6 +38,6 @@ lda_paths: [
   "dvc/lda/generated/2022",
 ]
 processes:
-tvd_l: 10
+tvd_l: 8
 force_new_tvd: False
 repeat_evaluations: 5

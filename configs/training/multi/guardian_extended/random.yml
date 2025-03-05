@@ -1,25 +1,5 @@
-training:
-  name: "confusion_ff_embed_l180"
-  dtype: "float32"
-  train_ratio: 0.8
-  batch_size: 1024
-  learning_rate: 0.001
-  min_epochs: 200
-  max_epochs: 2000
-  indicator_accuracy_weighting: True
-  first_split_date: "01-01"
-  vectorizer:
-    type: llm
-    tfidf:
-      preprocess_texts: True
-    llm:
-      model_name: "all-MiniLM-L6-v2"
-  training_scheme: "confusion"
-  model_type: "simple"
-  confusion:
-    split_distance: 180
-  llm:
-    freeze_backend: True
+name: "random"
+split_distance: 180
 datasets: [
     "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/us-news.pkl",
     "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/world.pkl",
@@ -54,8 +34,8 @@ datasets: [
     "dvc/datasets/guardian_extended/2020-7-1_2022-6-30/world.pkl",
     "dvc/datasets/guardian_extended/2021-7-1_2023-6-30/world.pkl",
     "dvc/datasets/guardian_extended/2021-7-1_2023-6-30/us-news.pkl",
-]
-general:
-  trainings_root: dvc/trainings/guardian_extended
+  ]
+trainings_root: dvc/trainings/guardian_extended
 overwrite_trainings: new
 deterministic: False
+random: True

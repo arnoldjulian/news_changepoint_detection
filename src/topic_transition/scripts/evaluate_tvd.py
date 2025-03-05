@@ -3,12 +3,14 @@
 import argparse
 import copy
 import os
+from datetime import date, timedelta
 from functools import partial
 from multiprocessing import Pool
 
 import nltk
 import pandas as pd
 import yaml
+from dateutil.relativedelta import relativedelta
 from nltk.corpus import stopwords
 from tqdm import tqdm
 
@@ -34,7 +36,7 @@ def main(base_config: dict) -> None:
     None
         This function does not return any value, it performs calculations and saves the results.
     """
-    training_name = base_config["training_name"]
+    training_name = base_config["model_name"]
     repeat_evaluations = base_config["repeat_evaluations"]
     if repeat_evaluations:
         training_names = [training_name]
@@ -46,7 +48,20 @@ def main(base_config: dict) -> None:
     evaluations_base_path = base_config["evaluation_base_path"]
     lda_config = base_config["lda"]
     dataset_paths = base_config["selected_datasets"]
-    all_events, topn_events = load_all_events(base_config)
+    if "selected_months" in base_config:
+        selected_months = base_config["selected_months"]
+        split_distance = base_config["tvd_l"]
+        selected_data_intervals = []
+        for selected_month in selected_months:
+            selected_year, selected_month = selected_month.split("-")
+            start_date = date(int(selected_year), int(selected_month), 1)
+            end_date = start_date + relativedelta(months=1)
+            start_date = start_date - timedelta(days=split_distance)
+            end_date = end_date + timedelta(days=split_distance)
+            time_interval = f"{start_date}-{end_date}"
+            selected_data_intervals.append(time_interval)
+
+    all_events = load_all_events(base_config)
 
     for i, training_name in enumerate(training_names):
         config = copy.deepcopy(base_config)
@@ -59,7 +74,7 @@ def main(base_config: dict) -> None:
             for j, lda_path in enumerate(lda_paths):
                 lda_paths[j] = f"{lda_path}_num_{i}"
 
-        deltas_df, pivot_df, tvds = get_tvd_metrics(all_events, config, dataset_paths, lda_config, topn_events)
+        deltas_df, tvds = get_tvd_metrics(all_events, config, dataset_paths, lda_config)
 
         for tvd, dataset_path in zip(tvds, dataset_paths):
             year, secion_id = dataset_path.split(os.path.sep)[-2:]
@@ -68,7 +83,6 @@ def main(base_config: dict) -> None:
             tvd.to_csv(indicator_path, index=False)
 
         deltas_df.to_csv(os.path.join(evaluation_path, "deltas.csv"), index=False)
-        pivot_df.to_csv(os.path.join(evaluation_path, "deltas.csv"), index=False)
 
         with Pool(processes=config["processes"]) as pool:
             func = partial(calculate_avg_indicators_for_dataset)

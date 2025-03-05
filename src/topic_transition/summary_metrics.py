@@ -48,7 +48,7 @@ def split_model_name(model_name: str) -> tuple[str, str, float | int]:
     return base_model, l_value, l_value_weight
 
 
-def generate_delta_latex_table(summary: dict, output_path: str, top_n_delta: int):
+def generate_delta_latex_table(summary: dict, output_path: str):
     """
     Save latex snippet of the indicator deltas table.
 
@@ -58,27 +58,20 @@ def generate_delta_latex_table(summary: dict, output_path: str, top_n_delta: int
         DataFrame containing delta metrics for different models.
     output_path
         Path where the generated LaTeX table will be saved.
-    top_n_delta
-        Highest top-k delta value to include in the table.
     """
-    min_top_deltas = [summary[f"top_{i}_delta_mean"].min() for i in range(1, top_n_delta + 1)]
 
     table_content = "\\begin{table}[htbp]\n\\centering\n"
-    table_content += "\\caption{Delta metrics for different models}\n\\label{tab:model_deltas}\n\\small\n"
-    column_alignments = "l" + "".join(["c" for _ in range(top_n_delta)])
-    table_content += "\\begin{tabular}{" + column_alignments + "}\n\\toprule\n"
+    table_content += "\\caption{Delta metrics for different models}\n\\small\n"
+    table_content += "\\begin{tabular}{lc}\n\\toprule\n"
     table_content += "model name &"
-
-    for i in range(1, top_n_delta + 1):
-        table_content += f"top {i} delta±stde"
+    table_content += f"delta ± stde"
     table_content += "\\\\\n\\midrule\n"
 
     for _, row in summary.iterrows():
         table_content += f"{row['model_name2']}"
-        for i in range(1, top_n_delta + 1):
-            mean = row[f"top_{i}_delta_mean"]
-            stde = row[f"top_{i}_delta_stde"]
-            table_content += f" & {bold_max_min_in_column(mean, stde,min_top_deltas[i-1])}"
+        mean = row["delta_mean"]
+        stde = row["delta_stde"]
+        table_content += f" & {bold_max_min_in_column(mean, stde, summary['delta_mean'].min())}"
         table_content += "\\\\\n"
 
     table_content += "\\bottomrule\n\\end{tabular}\n\\medskip\n\\end{table}\n"
@@ -99,7 +92,7 @@ def summarize_metrics(config: dict):
 
         list_of_dfs = []
         for path in paths:
-            df = pd.read_csv(os.path.join(path, "avg_tfidf_score_deltas.csv"))
+            df = pd.read_csv(os.path.join(path, "deltas.csv"))
             list_of_dfs.append(df)
 
         delta_df = pd.concat(list_of_dfs)
@@ -127,4 +120,4 @@ def summarize_metrics(config: dict):
     split_results = summary["model_name2"].apply(split_model_name)
     summary[["base_model", "l_value", "l_value_weight"]] = pd.DataFrame(split_results.tolist(), index=summary.index)
     summary = summary.sort_values(by=["base_model", "l_value_weight"])
-    generate_delta_latex_table(summary, latex_output_2, config["top_n_delta"])
+    generate_delta_latex_table(summary, latex_output_2)

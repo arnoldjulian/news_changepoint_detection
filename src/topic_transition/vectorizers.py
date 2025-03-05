@@ -22,15 +22,13 @@ class BaseVectorizer(ABC):
 class TFIDFVectorizer(BaseVectorizer):
     """TFIDF vectorizer class."""
 
-    def __init__(self, config: dict[str, str]) -> None:
+    def __init__(self) -> None:
         """Vectorizer creation."""
-        self.preprocess_texts = config["preprocess_texts"]
         self.vectorizer = TfidfVectorizer(stop_words="english")
 
     def fit_transform(self, texts: pd.Series | list[str]) -> csr_matrix:
         """Fits a TFIDF vectorizer and returns encoded sparse vectors."""
-        if self.preprocess_texts:
-            texts = [preprocess_text(text) for text in texts]
+        texts = [preprocess_text(text) for text in texts]
         return self.vectorizer.fit_transform(texts)
 
 
@@ -53,11 +51,11 @@ class LLMVectorizer(BaseVectorizer):
             return self.model.encode(texts)  # type: ignore
 
 
-def get_vectorizer(vectorizer_config: dict) -> BaseVectorizer:
+def get_vectorizer(vectorizer_type: str) -> BaseVectorizer:
     """Vectorizer factory method."""
-    if vectorizer_config["type"] == "tfidf":
-        return TFIDFVectorizer(vectorizer_config["tfidf"])
-    elif vectorizer_config["type"] == "llm":
-        return LLMVectorizer(vectorizer_config["llm"]["model_name"])
+    if vectorizer_type == "tfidf":
+        return TFIDFVectorizer()
+    elif vectorizer_type in ["all-distilroberta-v1", "all-MiniLM-L6-v2"]:
+        return LLMVectorizer(vectorizer_type)
     else:
-        raise ValueError(f"Invalid vectorizer type: {vectorizer_config['type']}")
+        raise ValueError(f"Invalid vectorizer type: {vectorizer_type}")

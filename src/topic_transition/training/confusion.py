@@ -69,9 +69,9 @@ def get_feedforward_loaders(
     torch_dtype: torch.dtype,
     train_idxs: list[int],
     val_idxs: list[int],
-    training_config: dict,
-    dataset_config: dict,
-    vectorizer_config: dict,
+    config: dict,
+    dataset_path: str,
+    vectorizer_type: str,
 ) -> tuple[DataLoader, DataLoader | None, int]:
     """
     Get dataloaders for non-llm model.
@@ -88,7 +88,7 @@ def get_feedforward_loaders(
         The list of indices for training data.
     val_idxs : list
         The list of indices for validation data.
-    training_config : dict
+    config : dict
         The configuration settings for training.
     vectorizer_config : dict
         The configuration settings for the vectorizer.
@@ -98,29 +98,29 @@ def get_feedforward_loaders(
     Tuple[DataLoader, Union[DataLoader, None], sparse matrix]
         A tuple containing the training data loader, validation data loader (if applicable), and the vectorized data.
     """
-    vectors_path = dataset_config["path"].replace("pkl", "tfidf")
-    if vectorizer_config["type"] == "tfidf" and os.path.exists(vectors_path):
+    vectors_path = dataset_path.replace("pkl", "tfidf")
+    if vectorizer_type == "tfidf" and os.path.exists(vectors_path):
         with open(vectors_path, "rb") as f:
             vectors = pickle.load(f)
     else:
-        vectorizer = get_vectorizer(vectorizer_config)
+        vectorizer = get_vectorizer(vectorizer_type)
         vectors = vectorizer.fit_transform(data["full_text"])
-        if vectorizer_config["type"] == "tfidf":
+        if vectorizer_type == "tfidf":
             with open(vectors_path, "wb") as f:
                 pickle.dump(vectors, f)
-    if vectorizer_config["type"] == "tfidf":
+    if vectorizer_type == "tfidf":
         data["vector"] = [vectors.getrow(i) for i in range(vectors.shape[0])]  # type: ignore
     else:
         data["vector"] = [vectors[i] for i in range(vectors.shape[0])]
     train_loader = get_feedforward_dataloader(data, train_idxs, batch_size, shuffle=True, dtype=torch_dtype)
-    if 1.0 > training_config["train_ratio"] > 0.0:
+    if 1.0 > config["train_ratio"] > 0.0:
         val_loader = get_feedforward_dataloader(data, val_idxs, batch_size, shuffle=False, dtype=torch_dtype)
     else:
-        raise ValueError("Invalid train ratio: {training_config['train_ratio']}. Must be between 0.0 and 1.0.")
+        raise ValueError("Invalid train ratio: {config['train_ratio']}. Must be between 0.0 and 1.0.")
     return train_loader, val_loader, int(vectors.shape[1])
 
 
-def set_labels(data: pd.DataFrame, first_split_idx):
+def set_labels(data: pd.DataFrame, first_split_idx: int):
     """
     Set labels for each article according to the confusion scheme.
 
@@ -158,7 +158,6 @@ def calculate_indicators(
     model: FFConfusion,
     device: torch.device,
     dates: list[date],
-    indicator_accuracy_weighting: bool,
     first_split_idx: int,
     split_distance: int | None,
 ):
@@ -222,20 +221,18 @@ def calculate_indicators(
     for split_day_idx in range(len(dates[first_split_idx:-first_split_idx])):
         left_accuracy_arr = np.concatenate(split_left_accuracies[split_day_idx])
         right_accuracy_arr = np.concatenate(split_right_accuracies[split_day_idx])
-        if indicator_accuracy_weighting:
-            if left_accuracy_arr.shape[0] == 0 and right_accuracy_arr.shape[0] == 0:
-                accuracy_indicator = np.nan
-            elif left_accuracy_arr.shape[0] == 0:
-                accuracy_indicator = np.mean(right_accuracy_arr)
-            elif right_accuracy_arr.shape[0] == 0:
-                accuracy_indicator = np.mean(left_accuracy_arr)
-            else:
-                mean_left_accuracy = np.mean(left_accuracy_arr)
-                mean_right_accuracy = np.mean(right_accuracy_arr)
-                accuracy_indicator = np.mean([mean_left_accuracy, mean_right_accuracy])
-            accuracy_indicators.append(accuracy_indicator)
+        if left_accuracy_arr.shape[0] == 0 and right_accuracy_arr.shape[0] == 0:
+            accuracy_indicator = np.nan
+        elif left_accuracy_arr.shape[0] == 0:
+            accuracy_indicator = np.mean(right_accuracy_arr)
+        elif right_accuracy_arr.shape[0] == 0:
+            accuracy_indicator = np.mean(left_accuracy_arr)
         else:
-            accuracy_indicators.append(np.mean(np.concatenate([left_accuracy_arr, right_accuracy_arr])))
+            mean_left_accuracy = np.mean(left_accuracy_arr)
+            mean_right_accuracy = np.mean(right_accuracy_arr)
+            accuracy_indicator = np.mean([mean_left_accuracy, mean_right_accuracy])
+        accuracy_indicators.append(accuracy_indicator)
+
     indicators_df = pd.DataFrame.from_dict({"date": [], "indicator_value": []})
     indicators_df["date"] = dates[first_split_idx:-first_split_idx]
     indicators_df["indicator_value"] = accuracy_indicators
@@ -270,20 +267,20 @@ def calculate_batch_side_accuracy(split_labels: Tensor, split_predictions: Tenso
 
 
 def train_confusion(
-    data: pd.DataFrame, train_out: str, training_config: dict, dataset_config: dict, vectorizer_config: dict
+    data: pd.DataFrame, train_out: str, config: dict, dataset_path: str, vectorizer_type: str
 ) -> None:
     """
     Train a model with confusion scheme.
 
     Parameters
     ----------
-    data : pandas.DataFrame
+    data
         The input data containing the text data to be trained on.
-    train_out : str
+    train_out
         The path to the directory where the trained model and other output files will be saved.
-    training_config : dict
+    config
         A dictionary containing the configuration parameters for training the model.
-    vectorizer_config : dict
+    vectorizer_type
         A dictionary containing the configuration parameters for the vectorizer used to transform the text data.
 
     Returns
@@ -291,8 +288,8 @@ def train_confusion(
     None
 
     """
-    if "first_split_date" in training_config:
-        first_split_date = training_config["first_split_date"]
+    if "first_split_date" in config:
+        first_split_date = config["first_split_date"]
         start_date = data["date"].iloc[0]
         end_date = data["date"].iloc[-1]
         dates = get_dates_for_interval(start_date, end_date)
@@ -301,31 +298,31 @@ def train_confusion(
             raise ValueError(f"Invalid first split date: {first_split_date}")
         first_split_idx = dates_mm_dd.index(first_split_date)
     else:
-        first_split_idx = training_config["first_split_idx"]
+        first_split_idx = config["first_split_idx"]
 
-    split_distance = training_config["confusion"]["split_distance"]
+    split_distance = config["split_distance"]
     set_labels(data, first_split_idx)
     start_date = data["date"].iloc[0]
     end_date = data["date"].iloc[-1]
     dates = get_dates_for_interval(start_date, end_date)
     split_dates = dates[first_split_idx:-first_split_idx]
     num_splits = len(split_dates)
-    train_idxs, val_idxs = get_splits(data, train_ratio=training_config["train_ratio"])
-    batch_size = training_config["batch_size"]
-    torch_dtype = getattr(torch, training_config["dtype"])
+    train_idxs, val_idxs = get_splits(data, train_ratio=config["train_ratio"])
+    batch_size = config["batch_size"]
+    torch_dtype = getattr(torch, config["dtype"])
     torch.set_default_dtype(torch_dtype)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     train_loader, val_loader, input_dim = get_feedforward_loaders(
-        batch_size, data, torch_dtype, train_idxs, val_idxs, training_config, dataset_config, vectorizer_config
+        batch_size, data, torch_dtype, train_idxs, val_idxs, config, dataset_path, vectorizer_type
     )
     model = FFConfusion(input_dim, num_splits).type(torch_dtype).to(device)
-    optimizer = optim.Adam(model.parameters(), lr=training_config["learning_rate"])
+    optimizer = optim.Adam(model.parameters(), lr=float(config["learning_rate"]))
     criterion = BCEWithWeights(data, torch_dtype, device)
     model.to(device)
     criterion.to(device)
     min_loss = np.inf
     per_epoch_losses: dict[str, list] = {"epoch": [], "train": [], "val": []}  # type: ignore
-    for epoch in tqdm(range(training_config["max_epochs"]), desc="Epoch"):
+    for epoch in tqdm(range(config["max_epochs"]), desc="Epoch"):
         epoch_train_loss, epoch_val_loss = train_epoch(
             criterion, device, model, optimizer, train_loader, val_loader, split_dates, split_distance
         )
@@ -337,15 +334,14 @@ def train_confusion(
             min_loss = epoch_loss
             torch.save(model, os.path.join(train_out, "best_model_checkpoint.pth"))
         else:
-            if epoch >= training_config["min_epochs"]:
+            if epoch >= config["min_epochs"]:
                 break
     loss_df = pd.DataFrame.from_dict(per_epoch_losses)
     loss_df.to_csv(os.path.join(train_out, "per_epoch_losses.csv"), index=False)
     indicators_path = os.path.join(train_out, "indicator_values.csv")
     model = torch.load(os.path.join(train_out, "best_model_checkpoint.pth"), weights_only=False)
-    indicator_accuracy_weighting = training_config["indicator_accuracy_weighting"]
     indicator_df = calculate_indicators(
-        val_loader, model, device, dates, indicator_accuracy_weighting, first_split_idx, split_distance
+        val_loader, model, device, dates, first_split_idx, split_distance
     )
     indicator_df.to_csv(indicators_path, index=False)
     loss_df["train"] = loss_df["train"] / loss_df["train"].iloc[0]

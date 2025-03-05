@@ -1,17 +1,13 @@
 """Tools for evaluation."""
 import os
-from datetime import date
 
 import nltk
 import numpy as np
 import pandas as pd
 from nltk import word_tokenize
 from nltk.corpus import stopwords
-from plotly import graph_objects as go
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
-from topic_transition.utils import get_last_day_of_month
 
 nltk.download("punkt")
 nltk.download("punkt_tab")
@@ -74,11 +70,10 @@ def get_events_with_scores(training_path: str, dataset_base_path: str, events_ba
     dataset_path = os.path.join(dataset_path, f"{section_id}.pkl")
     dataset = pd.read_pickle(dataset_path)
     dataset["date"] = pd.to_datetime(dataset["webPublicationDate"]).dt.date
-    return get_events_with_significance_scores(dataset, time_interval, section_id, events_base_path)
+    return get_events_with_significance_scores(time_interval, section_id, events_base_path)
 
 
 def get_events_with_significance_scores(
-    dataset: pd.DataFrame | str,
     time_interval: str,
     section_id: str,
     events_base_path: str,
@@ -97,8 +92,6 @@ def get_events_with_significance_scores(
     events_base_path
         Base directory path where event files are stored.
     """
-    if isinstance(dataset, str):
-        dataset = pd.read_pickle(dataset)
     events_dir = os.path.join(events_base_path, time_interval)
     events_path = os.path.join(events_dir, f"{section_id}.csv")
     if os.path.exists(events_path):
@@ -106,87 +99,56 @@ def get_events_with_significance_scores(
     else:
         events = pd.read_csv(os.path.join(events_dir, "world.csv"))
     events["date"] = pd.to_datetime(events["date"]).dt.date
-    calculate_significance_scores(dataset, events, "yearly")  # type: ignore
     return events
 
 
-def get_events_from_path(dataset: pd.DataFrame | str, events_path: str):
+def get_events_from_path(events_path: str):
     """Get events with significance scores."""
-    if isinstance(dataset, str):
-        dataset = pd.read_pickle(dataset)
     events = pd.read_csv(events_path)
     events["date"] = pd.to_datetime(events["date"]).dt.date
-    calculate_significance_scores(dataset, events, "yearly")  # type: ignore
     return events
-
-
-def calculate_significance_scores(articles: pd.DataFrame, events: pd.DataFrame):
-    """
-    Calculate significance scores for a specific dataset.
-
-    Parameters
-    ----------
-    articles
-        DataFrame containing articles data with columns "webTitle" and "tokenized".
-    events
-        DataFrame containing events data with columns "description" and "tokenized".
-    """
-
-    def process_text(text):
-        tokens = word_tokenize(text)
-        return [word.lower() for word in tokens if word.isalpha() and word.lower() not in stop_words]
-
-    articles["tokenized"] = articles["webTitle"].apply(process_text)
-    events["description"] = events["description"].fillna("")
-    if len(events) == 1:
-        events["significance_score"] = 1.0
-    else:
-        events["tokenized"] = events["description"].apply(process_text)
-        vectorizer = TfidfVectorizer()
-        vectorizer.fit(list(events["description"]) + list(articles["webTitle"]))
-        news_vectors = vectorizer.transform(articles["webTitle"]).toarray()
-        event_vectors = vectorizer.transform(events["description"]).toarray()
-        tfidf_mtx = cosine_similarity(event_vectors, news_vectors)
-        events["significance_score"] = tfidf_mtx.mean(axis=1)
 
 
 def calculate_avg_indicators_for_dataset(indicators: pd.DataFrame, events: pd.DataFrame) -> pd.DataFrame:
     """
-    Calculate average indicators for dataset.
+    Calculate average indicators.
 
     Parameters
     ----------
-    indicators
-        DataFrame containing indicator values.
-    events
+    training_path : str
+        The file path to the directory containing the indicators data file.
+
+    events : pd.DataFrame
         A DataFrame containing the event data, which includes a date column.
     """
+    # Ensure dates are comparable
     events["date"] = pd.to_datetime(events["date"]).dt.date
-    total_tfidf_score = events["yearly_avg_tfidf_score"].sum()
-    if total_tfidf_score != 0:
-        events["normalized_tfidf_score"] = events["yearly_avg_tfidf_score"] / total_tfidf_score
-    else:
-        events["normalized_tfidf_score"] = 0
 
+    # Merge indicators with events
     merged_df = pd.merge(indicators, events, on="date", how="inner")
+
+    # Normalize the indicator values to sum to 1.0
     total_indicator_value = merged_df["indicator_value"].sum()
     if total_indicator_value != 0:
         merged_df["normalized_indicator_value"] = merged_df["indicator_value"] / total_indicator_value
     else:
         merged_df["normalized_indicator_value"] = 0
 
+    # Calculate averages
     avg_indicator_value = merged_df["normalized_indicator_value"].mean()
-    weighted_avg = merged_df["normalized_indicator_value"] * merged_df["normalized_tfidf_score"]
-    weighted_avg = weighted_avg.mean()  # type: ignore
+
+    # Calculate correlation
     if len(merged_df["indicator_value"]) < 2:
         correlation = np.nan
     else:
         correlation = merged_df["indicator_value"].corr(merged_df["yearly_avg_tfidf_score"])
+
+    # Create a DataFrame with the results
     result_df = pd.DataFrame(
         {
             "indicators_average": [avg_indicator_value],
-            "weighted_indicators_average": [weighted_avg],
             "indicator_significance_correlation": [correlation],
         }
     )
+
     return result_df

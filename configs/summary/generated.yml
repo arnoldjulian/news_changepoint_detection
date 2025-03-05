@@ -1,4 +1,11 @@
 evaluations:
+  "TVD,L=8": [
+    "dvc/evaluations/generated/tvd8",
+    "dvc/evaluations/generated/tvd8_num_1",
+    "dvc/evaluations/generated/tvd8_num_2",
+    "dvc/evaluations/generated/tvd8_num_3",
+    "dvc/evaluations/generated/tvd8_num_4",
+  ]
   "TVD,L=10": [
     "dvc/evaluations/generated/tvd10",
     "dvc/evaluations/generated/tvd10_num_1",
@@ -6,22 +13,13 @@ evaluations:
     "dvc/evaluations/generated/tvd10_num_3",
     "dvc/evaluations/generated/tvd10_num_4",
   ]
-  "FF,tf-idf,L=10": [
-    "dvc/evaluations/generated/confusion_ff_tfidf_l10",
-    "dvc/evaluations/generated/confusion_ff_tfidf_l10_num_1",
-    "dvc/evaluations/generated/confusion_ff_tfidf_l10_num_2",
-    "dvc/evaluations/generated/confusion_ff_tfidf_l10_num_3",
-    "dvc/evaluations/generated/confusion_ff_tfidf_l10_num_4",
-  ]
-  "FF,embedding,L=10": [
-    "dvc/evaluations/generated/confusion_ff_embed_l10",
-    "dvc/evaluations/generated/confusion_ff_embed_l10_num_1",
-    "dvc/evaluations/generated/confusion_ff_embed_l10_num_2",
-    "dvc/evaluations/generated/confusion_ff_embed_l10_num_3",
-    "dvc/evaluations/generated/confusion_ff_embed_l10_num_4",
+  "distilroberta1,L=8": [
+    "dvc/evaluations/generated/distilroberta",
+    "dvc/evaluations/generated/distilroberta_num_1",
+    "dvc/evaluations/generated/distilroberta_num_2",
+    "dvc/evaluations/generated/distilroberta_num_3",
+    "dvc/evaluations/generated/distilroberta_num_4",
   ]
 summary_path: "dvc/summaries/generated"
-top_n_delta: 1
-show_max_tvd: True
-significant_events_path: "dvc/evaluations/generated/confusion_ff_embed_l10/deltas.csv"
 xticks_format: "dd"
+rescale_models: True

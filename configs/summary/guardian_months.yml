@@ -1,0 +1,25 @@
+evaluations:
+  "TVD,L=8": [
+    "dvc/evaluations/guardian_months/tvd8",
+    "dvc/evaluations/guardian_months/tvd8_num_1",
+    "dvc/evaluations/guardian_months/tvd8_num_2",
+    "dvc/evaluations/guardian_months/tvd8_num_3",
+    "dvc/evaluations/guardian_months/tvd8_num_4",
+  ]
+  "random,L=8": [
+    "dvc/evaluations/guardian_months/random",
+    "dvc/evaluations/guardian_months/random_num_1",
+    "dvc/evaluations/guardian_months/random_num_2",
+    "dvc/evaluations/guardian_months/random_num_3",
+    "dvc/evaluations/guardian_months/random_num_4",
+  ]
+  "distilroberta,L=8": [
+    "dvc/evaluations/guardian_months/distilroberta",
+    "dvc/evaluations/guardian_months/distilroberta_num_1",
+    "dvc/evaluations/guardian_months/distilroberta_num_2",
+    "dvc/evaluations/guardian_months/distilroberta_num_3",
+    "dvc/evaluations/guardian_months/distilroberta_num_4",
+  ]
+summary_path: "dvc/summaries/guardian_months"
+rescale_models: True
+xticks_format: "dd"
