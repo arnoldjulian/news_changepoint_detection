@@ -18,6 +18,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     with open(args.configuration, "r") as file:
-        config = yaml.safe_load(file)
-
-    main(config)
+        main(yaml.safe_load(file))

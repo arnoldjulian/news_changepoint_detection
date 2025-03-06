@@ -1,5 +1,4 @@
-"""Tools for evaluating a specific model."""
-
+"""Tools for evaluating Total Variational Distance with Latent Dirichlet Allocation."""
 import argparse
 import copy
 import os
@@ -18,19 +17,7 @@ stop_words = set(stopwords.words("english"))
 
 
 def main(base_config: dict) -> None:
-    """
-    Evaluate TVD on selected datasets.
-
-    Parameters
-    ----------
-    base_config : dict
-        A dictionary containing the configuration for the main function.
-
-    Returns
-    -------
-    None
-        This function does not return any value, it performs calculations and saves the results.
-    """
+    """Evaluate TVD on selected datasets."""
     training_name = base_config["model_name"]
     repeat_evaluations = base_config["repeat_evaluations"]
     if repeat_evaluations:
@@ -87,6 +74,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     with open(args.configuration, "r") as file:
-        config = yaml.safe_load(file)
-
-    main(config)
+        main(yaml.safe_load(file))

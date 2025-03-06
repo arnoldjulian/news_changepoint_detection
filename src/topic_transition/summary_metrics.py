@@ -8,31 +8,13 @@ from topic_transition.utils import find_matching_directories
 
 
 def bold_max_min_in_column(mean, stde, optimal_value):
-    """
-    Return bolded value.
-
-    Parameters
-    ----------
-    mean : float
-        The numerical value to format.
-    stde:
-        Standard Error.
-    optimal_value : float
-        The maximum value in the column.
-    """
+    """Return bolded value."""
     formatted_value = f"{mean:.2f} ± {stde:.2f}"
     return f"\\textbf{{{formatted_value}}}" if mean == optimal_value else formatted_value
 
 
 def split_model_name(model_name: str) -> tuple[str, str, float | int]:
-    """
-    Split the model_name2 into base model and L value.
-
-    Parameters
-    ----------
-    model_name
-        The complete model name.
-    """
+    """Split the model_name2 into base model and L value."""
     parts = model_name.split(",L=")
     base_model = parts[0]
 
@@ -49,16 +31,7 @@ def split_model_name(model_name: str) -> tuple[str, str, float | int]:
 
 
 def generate_delta_latex_table(summary: dict, output_path: str):
-    """
-    Save latex snippet of the indicator deltas table.
-
-    Parameters
-    ----------
-    summary
-        DataFrame containing delta metrics for different models.
-    output_path
-        Path where the generated LaTeX table will be saved.
-    """
+    """Save latex snippet of the indicator deltas table."""
     table_content = "\\begin{table}[htbp]\n\\centering\n"
     table_content += "\\caption{Delta metrics for different models}\n\\small\n"
     table_content += "\\begin{tabular}{lc}\n\\toprule\n"

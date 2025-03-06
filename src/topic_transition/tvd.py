@@ -16,20 +16,7 @@ from topic_transition.utils import get_dates_for_interval, load_or_train_lda, to
 def calculate_dataset_tvd(
     dataset: pd.DataFrame, dist: float = 1, first_split_date: str | None = None, first_split_idx: int | None = None
 ) -> pd.DataFrame:
-    """
-    Calculate Total Variation Distances for each date of the dataset.
-
-    Parameters
-    ----------
-    dataset
-        The dataset containing the data for calculation.
-    dist
-        The distance parameter used for defining the interval around each date.
-    first_split_date
-        date of the first possible value of the tuning parameter.
-    first_split_idx
-        index of the first possible value of the tuning parameter.
-    """
+    """Calculate Total Variation Distances for each date of the dataset."""
     start_date = dataset["date"].iloc[0]
     end_date = dataset["date"].iloc[-1]
     dates = get_dates_for_interval(start_date, end_date)
@@ -88,26 +75,7 @@ def calculate_topict_distribution_tvd(
     force_new_tvd: bool = False,
     first_split_idx: int | None = None,
 ):
-    """
-    Calculate deltas for all possible methods.
-
-    Parameters
-    ----------
-    dataset_path
-        Path to the dataset file.
-    lda_path
-        Path to the lda model directory.
-    lda_config
-        The configuration for the lda model.
-    tvd_l
-        Distance for the tuning parameters.
-    first_split_date
-        date of the first possible value of the tuning parameter.
-    force_new_tvd
-        If the TVD evaluation exists, should we override it or skip the evaluation?
-    first_split_idx
-        Index of the first possible value of the tuning parameter.
-    """
+    """Calculate deltas for all possible methods."""
     dataset = pd.read_pickle(dataset_path)
     dataset["date"] = pd.to_datetime(dataset["webPublicationDate"]).dt.date
 
@@ -183,23 +151,7 @@ def calculate_topic_distribution_from_base_path(
     force_new_tvd,
     first_split_idx: int | None = None,
 ):
-    """
-    Calculate LDA toopic distributions using dataset and root path to ldas.
-
-    Parameters
-    ----------
-    dataset_path : str
-        Path to the dataset file, including year and section identifier.
-    lda_base_path : str
-        Base directory path where LDA model files are stored.
-    lda_config : dict
-        Configuration options for the LDA model.
-    tvd_l : list
-        List of topic distribution vectors.
-    force_new_tvd : bool
-        Flag indicating whether to force a new topic distribution calculation.
-
-    """
+    """Calculate LDA toopic distributions using dataset and root path to ldas."""
     year, section_id = dataset_path.split(os.path.sep)[-2:]
     section_id = section_id[:-4]
     lda_path = os.path.join(lda_base_path, year)
@@ -218,25 +170,8 @@ def calculate_topic_distribution_from_base_path(
 
 def calculate_deltas_for_dataset(
     year: str, section_id: str, events: pd.DataFrame, tvd: pd.DataFrame, tvd_l: int
-) -> dict[str, list]:
-    """
-    Calculate deltas for all possible methods.
-
-    Parameters
-    ----------
-    lda_base_path : str
-        The base path for the lda model.
-    lda_config : dict
-        The configuration for the lda model.
-    topn_events : int
-        The number of top events to consider.
-
-    Returns
-    -------
-    dict[str, list]
-        A dictionary containing the calculated deltas.
-
-    """
+) -> pd.DataFrame:
+    """Calculate deltas for all possible methods."""
     deltas: dict[str, list] = {
         "model_name": [],
         "delta": [],

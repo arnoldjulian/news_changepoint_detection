@@ -1,14 +1,11 @@
 name: "random"
 split_distance: 180
 datasets: [
-    "dvc/datasets/guardian/1999-7-1_2001-6-30/us-news.pkl",
     "dvc/datasets/guardian/1999-7-1_2001-6-30/world.pkl",
     "dvc/datasets/guardian/2000-7-1_2002-6-30/uk-news.pkl",
-    "dvc/datasets/guardian/2000-7-1_2002-6-30/us-news.pkl",
     "dvc/datasets/guardian/2000-7-1_2002-6-30/world.pkl",
     "dvc/datasets/guardian/2001-7-1_2003-6-30/world.pkl",
     "dvc/datasets/guardian/2006-7-1_2008-6-30/uk-news.pkl",
-    "dvc/datasets/guardian/2006-7-1_2008-6-30/us-news.pkl",
     "dvc/datasets/guardian/2006-7-1_2008-6-30/world.pkl",
     "dvc/datasets/guardian/2007-7-1_2009-6-30/world.pkl",
     "dvc/datasets/guardian/2009-7-1_2011-6-30/uk-news.pkl",
@@ -32,7 +29,6 @@ datasets: [
     "dvc/datasets/guardian/2019-7-1_2021-6-30/world.pkl",
     "dvc/datasets/guardian/2020-7-1_2022-6-30/us-news.pkl",
     "dvc/datasets/guardian/2020-7-1_2022-6-30/world.pkl",
-    "dvc/datasets/guardian/2021-7-1_2023-6-30/world.pkl",
     "dvc/datasets/guardian/2021-7-1_2023-6-30/us-news.pkl",
   ]
 trainings_root: dvc/trainings/guardian

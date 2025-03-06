@@ -1,33 +1,19 @@
-"""Fetch all data (metadata and text) of Guardian articles."""
-
+"""Fetch all data (metadata and text) of Guardian newspaper articles."""
 import argparse
 import logging
 import os
-from datetime import datetime
+from datetime import date, datetime
 
-from topic_transition.data_sources.guardian import VALID_SECTION_IDS, fetch_data_for_interval
+from topic_transition.guardian import VALID_SECTION_IDS, fetch_data_for_interval
 
 logger = logging.getLogger("guardian")
 logger.setLevel(logging.INFO)
 
 
-def main(start_date, end_date, sections: list[str], output_dir: str, guardian_api_key: str, day_delta: int) -> None:
-    """
-    Fetch Guardian data for multiple years.
-
-    Parameters
-    ----------
-    years : list[int]
-        List of years for which data is to be fetched.
-    sections : list[str]
-        List of sections for which data is to be fetched.
-    output_dir : str
-        Directory where the fetched data will be stored.
-    guardian_api_key : str
-        API key for accessing the Guardian API.
-    day_delta : int
-        How many days should one request cover.
-    """
+def main(
+    start_date: date, end_date: date, sections: list[str], output_dir: str, guardian_api_key: str, day_delta: int
+) -> None:
+    """Fetch Guardian data for a time interval."""
     fetch_data_for_interval(guardian_api_key, output_dir, sections, start_date, end_date, day_delta)
 
 

@@ -4,8 +4,7 @@ import logging
 
 import yaml
 
-from topic_transition.training import single_train
-from topic_transition.training.base import single_random
+from topic_transition.training import generate_random_indicators_for_dataset, train_on_single_dataset
 from topic_transition.utils import set_random_seed
 
 logger = logging.getLogger("train_with_single_dataset")
@@ -21,22 +20,22 @@ def process_training(dataset_path, selected_month, base_config=None):
         config["selected_year"] = int(selected_year)
         config["selected_month"] = int(selected_month)
     if "random" in config and config["random"]:
-        single_random(config)
+        generate_random_indicators_for_dataset(config)
     else:
-        single_train(config)
+        train_on_single_dataset(config)
 
 
 def main(base_config) -> None:
     """Do all trainings for all months or years."""
-    datasets = base_config["datasets"]
+    dataset_paths = base_config["datasets"]
     set_random_seed(base_config["deterministic"])
     if "selected_months" in base_config:
         selected_months = base_config["selected_months"]
     else:
-        selected_months = [None for _ in datasets]
+        selected_months = [None for _ in dataset_paths]
 
-    for dataset, selected_month in zip(datasets, selected_months):
-        process_training(dataset, selected_month, base_config=base_config)
+    for dataset_path, selected_month in zip(dataset_paths, selected_months):
+        process_training(dataset_path, selected_month, base_config=base_config)
 
 
 if __name__ == "__main__":
@@ -45,6 +44,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     with open(args.configuration, "r") as file:
-        config = yaml.safe_load(file)
-
-    main(config)
+        main(yaml.safe_load(file))

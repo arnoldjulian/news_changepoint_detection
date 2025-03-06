@@ -32,7 +32,6 @@ def plot_indicators(grouped, indicators, output_root_path, xticks_format="YY-MM"
         max_idx = agg_indicators["mean"].argmax()
         model_max_date = agg_indicators["datetime"].iloc[max_idx]
 
-        # Add vertical lines with slight offsets
         if xticks_format == "dd":
             display_delta = pd.Timedelta(hours=3)
         else:
@@ -41,7 +40,6 @@ def plot_indicators(grouped, indicators, output_root_path, xticks_format="YY-MM"
         displayed_max_date = model_max_date + display_delta
         ax.axvline(displayed_max_date, color="blue", linestyle="--", label="Model Prediction")
 
-        # if group is not None:
         model_closest_event_date = group["event_date"].iloc[0]
         if not pd.isna(model_closest_event_date):
             ax.axvline(
@@ -51,7 +49,6 @@ def plot_indicators(grouped, indicators, output_root_path, xticks_format="YY-MM"
                 label="Model Event",
             )
 
-        # Show TVD baseline indicator plot
         baseline_model = group["baseline_model"].iloc[0]
         if not pd.isna(baseline_model):
             baseline_key = f"{key[0]}_{key[1]}_{baseline_model}"
@@ -101,7 +98,7 @@ def plot_indicators(grouped, indicators, output_root_path, xticks_format="YY-MM"
         plt.savefig(os.path.join(output_path, f"{key[0]}_{key[1]}_{key[2]}.jpg"))
 
 
-def aggregate_indicators(grouped, rescale_models):
+def aggregate_indicators(grouped):
     """Calculate mean and stde indicators for all 5 iterations."""
     indicators = {}
     for key, group in grouped:
@@ -198,12 +195,11 @@ def load_event_deltas(evaluation_path):
 def generate_summary_plots(config):
     """Plot aggregate indicator values."""
     summary_path = config["summary_path"]
-    rescale_models = config["rescale_models"] if "rescale_models" in config else False
 
     output_path = summary_path
 
     os.makedirs(output_path, exist_ok=True)
     indicator_df = get_indicators_with_event(config)
     grouped = indicator_df.groupby(["time_interval", "section", "model", "indicator_fname"])
-    indicators = aggregate_indicators(grouped, rescale_models)
+    indicators = aggregate_indicators(grouped)
     plot_indicators(grouped, indicators, output_path, config["xticks_format"])

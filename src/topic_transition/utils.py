@@ -23,13 +23,7 @@ def get_dates_for_interval(start_date: date, end_date: date) -> list[date]:
 
 
 def get_fischer_information_change(x_data: np.ndarray) -> np.ndarray:
-    """
-    Calculate the differences in Fischer Information.
-
-    Parameters
-    ----------
-    x_data : np.ndarray
-    """
+    """Calculate the differences in Fischer Information."""
     eps = np.finfo(x_data.dtype).eps
     x_data += eps
     dp1 = 1
@@ -64,31 +58,13 @@ def format_time_period(start_date: str | datetime.date, end_date: str | datetime
 
 
 def get_last_day_of_month(dt: datetime.date) -> datetime.date:
-    """
-    Get last day of the month for a given date.
-
-    Parameters
-    ----------
-    dt
-        A date object representing the input date.
-    """
+    """Get last day of the month for a given date."""
     last_day = calendar.monthrange(dt.year, dt.month)[1]
     return datetime.date(dt.year, dt.month, last_day)
 
 
 def total_variation_distance(arr1: np.ndarray, arr2: np.ndarray) -> np.ndarray:
-    """
-    Calculate Total Variation Distance between 2 arrays.
-
-    Parameters
-    ----------
-    arr1 : np.ndarray
-         Input array 1.
-
-    arr2 : np.ndarray
-         Input array 2.
-
-    """
+    """Calculate Total Variation Distance between 2 arrays."""
     if len(arr1.shape) == 1:
         arr1 = arr1 / np.sum(arr1, keepdims=True)
         arr2 = arr2 / np.sum(arr2, keepdims=True)
@@ -104,16 +80,7 @@ def total_variation_distance(arr1: np.ndarray, arr2: np.ndarray) -> np.ndarray:
 
 
 def get_f1_scores(pred: np.ndarray, ref: np.ndarray) -> np.ndarray:
-    """
-    Calculate f1 scores for different texts.
-
-    Parameters
-    ----------
-    pred
-        An array containing the predicted values.
-    ref
-        An array containing the reference values.
-    """
+    """Calculate f1 scores for different texts."""
     common_tokens = pred & ref
     len_arr = np.vectorize(len)
     # Use np.errstate to handle warnings for division by zero and invalid values
@@ -129,17 +96,7 @@ def get_f1_scores(pred: np.ndarray, ref: np.ndarray) -> np.ndarray:
 
 
 def increment_path_number(path: str) -> str:
-    """
-    Create a new path with an incremented numerical suffix for 'num_<number>'.
-
-    If the folder name ends with 'num_<number>', the number is incremented.
-    Otherwise, 'num_1' is appended to the folder name.
-
-    Parameters
-    ----------
-    path : str
-        The folder name or file path
-    """
+    """Create a new path with an incremented numerical suffix for 'num_<number>'."""
     training_paths = glob.glob(path + "_num_*")
     training_nums = [int(re.match(r".*_num_(\d+)$", tr_path).group(1)) for tr_path in training_paths]
     new_training_num = max(training_nums) + 1 if training_nums else 1
@@ -149,14 +106,7 @@ def increment_path_number(path: str) -> str:
 
 
 def find_matching_directories(base_path: str) -> list:
-    """
-    Find directories that match the given base path pattern.
-
-    Parameters
-    ----------
-    base_path : str
-        The base path to search for directories that match the given pattern
-    """
+    """Find directories that match the given base path pattern."""
     search_pattern = base_path + "_*"
     matching_paths = glob.glob(search_pattern)
 
@@ -199,15 +149,7 @@ def load_or_train_lda(dataset, force_new_tvd, lda_config, lda_path):
 
 
 def set_random_seed(deterministic: bool):
-    """
-    Set the random seed for reproducibility in both deterministic and non-deterministic modes.
-
-    Parameters
-    ----------
-    deterministic : bool
-        If True, sets the random seed to a fixed value (42).
-        If False, uses the current system time for a random seed.
-    """
+    """Set the random seed for reproducibility in both deterministic and non-deterministic modes."""
     seed = 42 if deterministic else int(time.time())  # Use fixed seed or system time
     print(f"Setting random seed: {seed}")  # Optional: For debugging
     random.seed(seed)

@@ -17,34 +17,15 @@ from tqdm import tqdm
 
 from topic_transition.data import get_splits
 from topic_transition.loss import BCEWithWeights
-from topic_transition.models.confusion import FFConfusion
+from topic_transition.model import FFConfusion
 from topic_transition.utils import get_dates_for_interval
 from topic_transition.vectorizers import get_vectorizer
 
 
-def get_feedforward_dataloader(
+def get_single_dataloader(
     data: pd.DataFrame, idxs: list[int], batch_size: int, shuffle: bool, dtype: torch.dtype
 ) -> DataLoader:
-    """
-    Create dataloader.
-
-    Parameters
-    ----------
-    dtype
-    data : pd.DataFrame
-        The input data containing vectors, labels and dates.
-    idxs : list[int]
-        The list of indices to select from the data.
-    batch_size : int
-        The batch size for the training dataloader.
-    shuffle : bool
-        Whether to shuffle the data during training.
-
-    Returns
-    -------
-    torch.utils.data.DataLoader
-        The training dataloader containing selected tensors, labels and dates.
-    """
+    """Create dataloader."""
     if isinstance(data.iloc[0]["vector"], csr_matrix):
         selected_vectors = scipy.sparse.vstack(data.loc[idxs, "vector"].values)
         selected_tensors = torch.tensor(selected_vectors.toarray(), dtype=dtype)
@@ -63,7 +44,7 @@ def get_feedforward_dataloader(
     return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
 
 
-def get_feedforward_loaders(
+def get_dataloaders(
     batch_size: int,
     data: pd.DataFrame,
     torch_dtype: torch.dtype,
@@ -73,31 +54,7 @@ def get_feedforward_loaders(
     dataset_path: str,
     vectorizer_type: str,
 ) -> tuple[DataLoader, DataLoader | None, int]:
-    """
-    Get dataloaders for non-llm model.
-
-    Parameters
-    ----------
-    batch_size : int
-        The batch size for the data loaders.
-    data : pd.DataFrame
-        The input data containing the full text.
-    torch_dtype : torch.dtype
-        The torch data type to be used.
-    train_idxs : list
-        The list of indices for training data.
-    val_idxs : list
-        The list of indices for validation data.
-    config : dict
-        The configuration settings for training.
-    vectorizer_config : dict
-        The configuration settings for the vectorizer.
-
-    Returns
-    -------
-    Tuple[DataLoader, Union[DataLoader, None], sparse matrix]
-        A tuple containing the training data loader, validation data loader (if applicable), and the vectorized data.
-    """
+    """Get dataloaders for non-llm model."""
     vectors_path = dataset_path.replace("pkl", "tfidf")
     if vectorizer_type == "tfidf" and os.path.exists(vectors_path):
         with open(vectors_path, "rb") as f:
@@ -112,30 +69,16 @@ def get_feedforward_loaders(
         data["vector"] = [vectors.getrow(i) for i in range(vectors.shape[0])]  # type: ignore
     else:
         data["vector"] = [vectors[i] for i in range(vectors.shape[0])]
-    train_loader = get_feedforward_dataloader(data, train_idxs, batch_size, shuffle=True, dtype=torch_dtype)
+    train_loader = get_single_dataloader(data, train_idxs, batch_size, shuffle=True, dtype=torch_dtype)
     if 1.0 > config["train_ratio"] > 0.0:
-        val_loader = get_feedforward_dataloader(data, val_idxs, batch_size, shuffle=False, dtype=torch_dtype)
+        val_loader = get_single_dataloader(data, val_idxs, batch_size, shuffle=False, dtype=torch_dtype)
     else:
         raise ValueError("Invalid train ratio: {config['train_ratio']}. Must be between 0.0 and 1.0.")
     return train_loader, val_loader, int(vectors.shape[1])
 
 
 def set_labels(data: pd.DataFrame, first_split_idx: int):
-    """
-    Set labels for each article according to the confusion scheme.
-
-    It is based on this paper:
-    https://arxiv.org/abs/1610.02048
-
-    Parameters
-    ----------
-    data : pd.DataFrame
-        The input DataFrame containing the data.
-
-    Returns
-    -------
-    None
-    """
+    """Set labels for each article according to the confusion scheme."""
     start_date = data["date"].iloc[0]
     end_date = data["date"].iloc[-1]
     dates = get_dates_for_interval(start_date, end_date)
@@ -161,26 +104,7 @@ def calculate_indicators(
     first_split_idx: int,
     split_distance: int | None,
 ):
-    """
-    Calculate indicator values with a specific model.
-
-    Parameters
-    ----------
-    dataloader : torch.utils.data.DataLoader
-        The dataloader object that provides the input data and labels.
-    model : FFConfusion
-        The model used for calculating the indicators.
-    device : torch.device
-        The device where the model and data will be loaded.
-    dates : list[date]
-        The list of dates for which indicators are calculated.
-
-    Returns
-    -------
-    pandas.DataFrame
-        A dataframe object containing the calculated indicators for each date.
-
-    """
+    """Calculate indicator values with a specific model."""
 
     def get_output_label_ff(batch):
         inputs, labels, timestamps = batch
@@ -240,52 +164,14 @@ def calculate_indicators(
 
 
 def calculate_batch_side_accuracy(split_labels: Tensor, split_predictions: Tensor, label: float) -> np.ndarray:
-    """
-    Calculate accuracy for one type of class label.
-
-    Parameters
-    ----------
-    split_labels : Tensor
-        Tensor containing the labels for each data point in the batch.
-
-    split_predictions : Tensor
-        Tensor containing the predicted labels for each data point in the batch.
-
-    label : float
-        The label for which the side accuracy needs to be calculated.
-
-    Returns
-    -------
-    np.ndarray
-        Numpy array containing the batch side accuracies, where each
-        accuracy value corresponds to a data point in the batch.
-
-    """
+    """Calculate accuracy for one type of class label."""
     side_label_filt = split_labels == label
     batch_neg_accuracies = ((split_predictions == split_labels)[side_label_filt]).cpu().numpy()
     return batch_neg_accuracies
 
 
 def train_confusion(data: pd.DataFrame, train_out: str, config: dict, dataset_path: str, vectorizer_type: str) -> None:
-    """
-    Train a model with confusion scheme.
-
-    Parameters
-    ----------
-    data
-        The input data containing the text data to be trained on.
-    train_out
-        The path to the directory where the trained model and other output files will be saved.
-    config
-        A dictionary containing the configuration parameters for training the model.
-    vectorizer_type
-        A dictionary containing the configuration parameters for the vectorizer used to transform the text data.
-
-    Returns
-    -------
-    None
-
-    """
+    """Train a model with confusion scheme."""
     if "first_split_date" in config:
         first_split_date = config["first_split_date"]
         start_date = data["date"].iloc[0]
@@ -310,7 +196,7 @@ def train_confusion(data: pd.DataFrame, train_out: str, config: dict, dataset_pa
     torch_dtype = getattr(torch, config["dtype"])
     torch.set_default_dtype(torch_dtype)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    train_loader, val_loader, input_dim = get_feedforward_loaders(
+    train_loader, val_loader, input_dim = get_dataloaders(
         batch_size, data, torch_dtype, train_idxs, val_idxs, config, dataset_path, vectorizer_type
     )
     model = FFConfusion(input_dim, num_splits).type(torch_dtype).to(device)
@@ -357,31 +243,7 @@ def train_epoch(
     split_dates: list[date],
     split_distance: int | None,
 ) -> tuple[float, float | None]:
-    """
-    Train a single epoch of a neural network model.
-
-    Parameters
-    ----------
-    criterion : torch.nn.Module
-        The loss function used to compute the training loss.
-    device : torch.device
-        The device on which the model and tensors should be placed.
-    model : torch.nn.Module
-        The neural network model to be trained.
-    optimizer : torch.optim.Optimizer
-        The optimizer used to update the model's parameters.
-    train_loader : torch.utils.data.DataLoader
-        The data loader for the training dataset.
-    val_loader : torch.utils.data.DataLoader or None
-        The data loader for the validation dataset. Pass None if not performing validation.
-
-    Returns
-    -------
-    epoch_train_loss : float
-        The average training loss for the epoch.
-    epoch_val_loss : float or None
-        The average validation loss for the epoch, or None if `val_loader` is None.
-    """
+    """Train a single epoch of a neural network model."""
 
     def calculate_loss_mask(timestamps):
         np_dates = np.array([np.datetime64(int(t), "s") for t in timestamps])

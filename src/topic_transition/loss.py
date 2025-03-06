@@ -10,18 +10,7 @@ class BCEWithWeights(nn.Module):
     """Loss with weights."""
 
     def __init__(self, data: pd.DataFrame, dtype: torch.dtype, device: torch.device):
-        """
-        Initialize an instance of the BCEWithWeights class.
-
-        Parameters
-        ----------
-        data
-            The input data as a pandas DataFrame.
-        dtype
-            The data type for calculations.
-        device
-            The device (CPU or GPU) to perform calculations on.
-        """
+        """Initialize an instance of the BCEWithWeights class."""
         super(BCEWithWeights, self).__init__()
         self.dtype = dtype
         self.device = device
@@ -34,18 +23,7 @@ class BCEWithWeights(nn.Module):
             self.pos_ratios[i] = torch.tensor(neg_train_num / pos_train_num, dtype=dtype, device=device)
 
     def __call__(self, model_outputs: torch.Tensor, targets: torch.Tensor, **kwargs: dict) -> torch.Tensor:
-        """
-        Calculate loss.
-
-        Parameters
-        ----------
-        model_outputs
-            The output tensor from the model, representing the predicted probabilities.
-        targets
-            The tensor containing the true target values.
-        **kwargs
-            Additional optional arguments.
-        """
+        """Calculate loss."""
         if "split_idx" in kwargs:
             split_idx = int(kwargs["split_idx"])  # type: ignore
             losses = -1 * (

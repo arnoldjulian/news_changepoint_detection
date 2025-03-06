@@ -16,22 +16,7 @@ def calculate_deltas_for_dataset(
     evaluation_path: str,
     model_name: str,
 ) -> pd.DataFrame:
-    """
-    Calculate top-k deltas for a selected evaluation.
-
-    Parameters
-    ----------
-    training_path
-        The path to the training data directory.
-    events:
-        List of events with dates and descriptions.
-    evaluation_path
-        Directory path where we save the results.
-    topn_events
-        The number of top events to consider for top-k delta.
-    model_name
-        The name of the model.
-    """
+    """Calculate top-k deltas for a selected evaluation."""
     deltas: dict[str, list] = {
         "model_name": [],
         "delta": [],
@@ -73,21 +58,8 @@ def calculate_deltas_for_dataset(
 
 def find_files_with_prefixes(
     selected_trainings: list[str], all_events: list[pd.DataFrame], event_paths: list[str], evaluation_base_path: str
-) -> tuple[list[str], list[str], list[str]]:
-    """
-    Find files with given prefixes and adjust the `all_events` list.
-
-    Parameters
-    ----------
-    selected_trainings
-        A list of training file path prefixes.
-    all_events
-        A list of event paths, one for each prefix in `selected_trainings`.
-    event_paths
-        A list of paths for event csvs.
-    evaluation_base_path
-        The root directory for all evaluation results.
-    """
+) -> tuple[list, list[pd.DataFrame], list[str]]:
+    """Find files with given prefixes and adjust the `all_events` list."""
     adjusted_trainings = []
     adjusted_events = []
     adjusted_event_paths = []
@@ -115,14 +87,7 @@ def find_files_with_prefixes(
 
 
 def main(config: dict) -> None:
-    """
-    Evaluate all trainings of a selected model type, including multiple iterations of the same training.
-
-    Parameters
-    ----------
-    config
-        A dictionary containing the configuration for the main function.
-    """
+    """Evaluate all trainings of a selected model type, including multiple iterations of the same training."""
     model_name = config["model_name"]
     evaluations_base_path = config["evaluation_base_path"]
     selected_trainings = config["selected_trainings"]
@@ -163,6 +128,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     with open(args.configuration, "r") as file:
-        config = yaml.safe_load(file)
-
-    main(config)
+        main(yaml.safe_load(file))

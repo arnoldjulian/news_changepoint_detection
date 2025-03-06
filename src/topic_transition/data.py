@@ -11,18 +11,7 @@ random.seed(42)
 
 
 def get_splits(articles: pd.DataFrame, shuffle: bool = True, train_ratio: float = 0.8) -> tuple[list[int], list[int]]:
-    """
-    Split the DataFrame indices into training and validation sets based on unique dates.
-
-    Parameters
-    ----------
-    articles
-        The DataFrame containing the data to be split.
-    shuffle
-        Whether to shuffle the indices within each date (default is True).
-    train_ratio
-        The ratio of samples to be included in the training set (default is 0.8).
-    """
+    """Split the DataFrame indices into training and validation sets based on unique dates."""
     train_idxs = []
     val_idxs = []
     days = articles["date"].unique()
@@ -49,14 +38,7 @@ def get_splits(articles: pd.DataFrame, shuffle: bool = True, train_ratio: float 
 
 
 def preprocess_text(text: str) -> str:
-    """
-    Preprocesses text.
-
-    Parameters
-    ----------
-    text
-        Unprocessed article text.
-    """
+    """Preprocesses text."""
     text = text.lower()
     doc = LANGUAGE_MODEL(text)
     tokens = [
