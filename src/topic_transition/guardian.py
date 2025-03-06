@@ -1,4 +1,4 @@
-"""Tools for fetching article data from Guardian."""
+"""Tools for fetching article data from the Guardian API."""
 
 import functools
 import logging
@@ -50,25 +50,13 @@ COLUMNS = [
 ]
 
 
-total_requests = 0
-max_requests = 500
-wait_after_request = 1
+TOTAL_REQUESTS = 0
+MAX_REQUESTS = 500
+WAIT_AFTER_REQUEST = 1
 
 
 def get_article_text(text_url: str) -> str | None:
-    """
-    Retrieve and parse the text content of an article from a given URL.
-
-    Parameters
-    ----------
-    text_url : str
-        The URL of the article's text content.
-
-    Returns
-    -------
-    str
-        The parsed text content of the article.
-    """
+    """Retrieve and parse the text content of an article from a given URL."""
     try:
         response = get_with_waiting(text_url).text
         soup = BeautifulSoup(response, "html.parser")
@@ -81,30 +69,7 @@ def get_article_text(text_url: str) -> str | None:
 def get_page_metadata(
     start_date: date, end_date: date, sections: list[str], api_key: str, page: int = 1
 ) -> tuple[list, int] | None:
-    """
-    Retrieve metadata for articles published on a specific date and within specified sections.
-
-    Parameters
-    ----------
-    start_date : date
-        The start date for the time interval.
-    end_date : date
-        The end date for the time interval.
-
-    sections : list of str
-        A list of section names for which metadata is to be retrieved.
-    api_key : str
-        The API key required for accessing the source of metadata.
-    page : int, optional
-        The page number of the metadata to retrieve (default is 1).
-
-    Returns
-    -------
-    tuple[list, dict]
-        A tuple containing two elements:
-        1. A list of metadata for articles published on the specified date and within the specified sections.
-        2. Additional metadata or information related to the retrieval process.
-    """
+    """Retrieve metadata for articles published on a specific date and within specified sections."""
     endpoint_url = f"https://content.guardianapis.com/search?section={'|'.join(sections)}"
     params = {
         "page": page,
@@ -122,28 +87,16 @@ def get_page_metadata(
 
 
 def rate_limited(limit: int) -> Callable:
-    """
-    Decorate a function to limit the number of requests.
-
-    Parameters
-    ----------
-    limit : int
-        The maximum number of times the decorated function can be called before hitting the rate limit.
-
-    Returns
-    -------
-    callable
-        A decorator function that can be applied to other functions.
-    """
+    """Decorate a function to limit the number of requests."""
 
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args: list, **kwargs: dict) -> Any:
-            global total_requests
-            if total_requests >= limit:
+            global TOTAL_REQUESTS
+            if TOTAL_REQUESTS >= limit:
                 raise RuntimeError("Rate limit exceeded")
             result = func(*args, **kwargs)
-            total_requests += 1
+            TOTAL_REQUESTS += 1
             return result
 
         return wrapper
@@ -151,38 +104,16 @@ def rate_limited(limit: int) -> Callable:
     return decorator
 
 
+@rate_limited(MAX_REQUESTS)
 def get_with_waiting(
     endpoint: str, params: dict | None = None, retry_times: int = 5, wait: float = 30
 ) -> httpx.Response:
-    """
-    Attempt to send a GET request to the specified endpoint.
-
-    Parameters
-    ----------
-    endpoint : str
-        The URL of the endpoint to send the GET request to.
-    params : dict, optional
-        The parameters to include in the GET request (default is None).
-    retry_times : int, optional
-        The number of times to retry the request in case of failure (default is 5).
-    wait : float, optional
-        The waiting period (in seconds) between retries (default is 30).
-
-    Returns
-    -------
-    dict
-        The JSON response received from the server.
-
-    Raises
-    ------
-    RuntimeError
-        If all retry attempts fail, or if the rate limit is exceeded.
-    """
+    """Attempt to send a GET request to the specified endpoint."""
     for _ in range(retry_times):
         response = httpx.get(endpoint, params=params)
-        time.sleep(wait_after_request)
+        time.sleep(WAIT_AFTER_REQUEST)
         if response.status_code == 200:
-            time.sleep(wait_after_request)
+            time.sleep(WAIT_AFTER_REQUEST)
             return response
         if response.status_code == 429:
             logger.warning(f"429: Too many requests: {response.text}. Endpoint: {endpoint}. Retrying.")
@@ -194,25 +125,7 @@ def get_with_waiting(
 
 
 def get_interval_metadata(start_date: date, end_date: date, sections: list[str], guardian_api_key: str) -> list[str]:
-    """
-    Retrieve metadata for articles published on a specific date within specified sections.
-
-    Parameters
-    ----------
-    start_date : date
-        The start date for the time interval.
-    end_date : date
-        The end date for the time interval.
-    sections : list of str
-        The list of section names for which to retrieve metadata.
-    guardian_api_key : str
-        The API key for accessing the Guardian API.
-
-    Returns
-    -------
-    list
-        A list of metadata objects for articles published on the specified date and sections.
-    """
+    """Retrieve metadata for articles published on a specific date within specified sections."""
     articles_data = []
     response = get_page_metadata(start_date, end_date, sections, guardian_api_key, page=1)
     if response is None:
@@ -231,27 +144,7 @@ def get_interval_metadata(start_date: date, end_date: date, sections: list[str],
 def fetch_data_for_interval(
     guardian_api_key: str, output_dir: str, sections: list[str], start_date, end_date, day_delta: int
 ) -> None:
-    """
-    Fetch data from the Guardian API for articles published within specified sections for a given year.
-
-    Parameters
-    ----------
-    guardian_api_key : str
-        The API key for accessing the Guardian API.
-    output_dir : str
-        The directory where the fetched data will be stored.
-    sections : list of str
-        The list of section names for which to fetch data.
-    year : int
-        The year for which to fetch data.
-    day_delta : int
-        How many days should one request cover.
-
-    Returns
-    -------
-    None
-     This function does not return any value; it fetches and saves data to the specified directory.
-    """
+    """Fetch data from the Guardian API for articles published within specified sections for a given year."""
     year = start_date.year
     if start_date.month == 1 and start_date.day == 1 and end_date.month == 12 and end_date.day == 31:
         dates_dir = os.path.join(output_dir, str(year))

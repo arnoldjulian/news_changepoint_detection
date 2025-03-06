@@ -1,0 +1,133 @@
+training:
+  name: "confusion_ff_embed_l8"
+  dtype: "float32"
+  train_ratio: 0.8
+  batch_size: 1024
+  learning_rate: 0.0001
+  min_epochs: 500
+  max_epochs: 500
+  indicator_accuracy_weighting: True
+  vectorizer:
+    type: llm
+    tfidf:
+      preprocess_texts: True
+    llm:
+      model_name: "all-MiniLM-L6-v2"
+  training_scheme: "confusion"
+  model_type: "simple"
+  confusion:
+    split_distance: 8
+  llm:
+    freeze_backend: True
+datasets: [
+    "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/us-news.pkl",
+
+    "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/world.pkl",
+
+    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/uk-news.pkl",
+
+    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/us-news.pkl",
+
+    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/world.pkl",
+
+    "dvc/datasets/guardian_extended/2001-7-1_2003-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2001-7-1_2003-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2001-7-1_2003-6-30/us-news.pkl",
+
+    "dvc/datasets/guardian_extended/2001-7-1_2003-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2001-7-1_2003-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2001-7-1_2003-6-30/world.pkl",
+
+    "dvc/datasets/guardian_extended/2006-7-1_2008-6-30/uk-news.pkl",
+    "dvc/datasets/guardian_extended/2006-7-1_2008-6-30/uk-news.pkl",
+
+    "dvc/datasets/guardian_extended/2006-7-1_2008-6-30/us-news.pkl",
+
+    "dvc/datasets/guardian_extended/2006-7-1_2008-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2006-7-1_2008-6-30/world.pkl",
+
+    "dvc/datasets/guardian_extended/2007-7-1_2009-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2007-7-1_2009-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2007-7-1_2009-6-30/us-news.pkl",
+
+    "dvc/datasets/guardian_extended/2007-7-1_2009-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2007-7-1_2009-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2007-7-1_2009-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2007-7-1_2009-6-30/world.pkl",
+
+    "dvc/datasets/guardian_extended/2009-7-1_2011-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2009-7-1_2011-6-30/us-news.pkl",
+    "dvc/datasets/guardian_extended/2009-7-1_2011-6-30/us-news.pkl",
+
+    "dvc/datasets/guardian_extended/2009-7-1_2011-6-30/world.pkl",
+    "dvc/datasets/guardian_extended/2009-7-1_2011-6-30/world.pkl",
+
+    "dvc/datasets/guardian_extended/2010-7-1_2012-6-30/us-news.pkl",
+]
+selected_months: [
+    "2000-01",
+    "2000-03",
+    "2000-11",
+    "2000-12",
+
+    "2000-05",
+    "2000-06",
+    "2000-10",
+
+    "2001-10",
+
+    "2001-02",
+    "2001-09",
+    "2001-10",
+
+    "2001-01",
+    "2001-02",
+    "2001-04",
+    "2001-09",
+
+    "2002-01",
+    "2002-03",
+    "2002-05",
+
+    "2002-07",
+    "2002-11",
+    "2002-12",
+
+    "2007-05",
+    "2007-07",
+
+    "2007-01",
+    "2007-10",
+
+    "2008-01",
+    "2008-08",
+    "2008-11",
+
+    "2008-02",
+    "2008-05",
+    "2008-09",
+    "2008-10",
+
+    "2010-04",
+    "2010-08",
+    "2010-12",
+
+    "2010-01",
+    "2010-10",
+
+    "2011-05",
+]
+general:
+  trainings_root: dvc/trainings/guardian_months
+overwrite_trainings: new
+deterministic: False
