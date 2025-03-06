@@ -45,7 +45,8 @@ dev = [
   "mypy==1.10.0",
   "pandas-stubs",
   "types-tqdm",
-  "toml-sort"
+  "toml-sort",
+  "pytest"
 ]
 
 [tool.black]
