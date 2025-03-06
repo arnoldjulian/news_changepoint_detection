@@ -2,6 +2,7 @@ import os
 
 import pandas as pd
 import pytest
+
 from topic_transition.summary_metrics import summarize_metrics
 
 
@@ -19,11 +20,8 @@ def mock_config(tmp_path):
     deltas_2.to_csv(model_2_path / "deltas.csv", index=False)
 
     return {
-        "evaluations": {
-            "random,L=180": [str(model_1_path)],
-            "TVD,L=180": [str(model_2_path)]
-        },
-        "summary_path": str(summary_path)
+        "evaluations": {"random,L=180": [str(model_1_path)], "TVD,L=180": [str(model_2_path)]},
+        "summary_path": str(summary_path),
     }
 
 

@@ -1,19 +1,22 @@
 import pandas as pd
 import pytest
 import torch
+
 from topic_transition.loss import BCEWithWeights
 
 
 @pytest.fixture
 def dummy_data():
     """Fixture for dummy data frame used in tests."""
-    data = pd.DataFrame({
-        "label": [
-            [1, 0, 1],
-            [0, 1, 1],
-            [1, 1, 0],
-        ]
-    })
+    data = pd.DataFrame(
+        {
+            "label": [
+                [1, 0, 1],
+                [0, 1, 1],
+                [1, 1, 0],
+            ]
+        }
+    )
     return data
 
 
