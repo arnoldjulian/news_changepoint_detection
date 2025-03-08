@@ -13,19 +13,12 @@ evaluations:
     "dvc/evaluations/artificial_split/tvd90_num_3",
     "dvc/evaluations/artificial_split/tvd90_num_4",
   ]
-  "FF,embedding,L=180": [
-    "dvc/evaluations/artificial_split/confusion_ff_embed_l180",
-    "dvc/evaluations/artificial_split/confusion_ff_embed_l180_num_1",
-    "dvc/evaluations/artificial_split/confusion_ff_embed_l180_num_2",
-    "dvc/evaluations/artificial_split/confusion_ff_embed_l180_num_3",
-    "dvc/evaluations/artificial_split/confusion_ff_embed_l180_num_4",
-  ]
   "distilroberta,L=180": [
-    "dvc/evaluations/artificial_split/distilroberta1",
-    "dvc/evaluations/artificial_split/distilroberta1_num_1",
-    "dvc/evaluations/artificial_split/distilroberta1_num_2",
-    "dvc/evaluations/artificial_split/distilroberta1_num_3",
-    "dvc/evaluations/artificial_split/distilroberta1_num_4",
+    "dvc/evaluations/artificial_split/distilroberta",
+    "dvc/evaluations/artificial_split/distilroberta_num_1",
+    "dvc/evaluations/artificial_split/distilroberta_num_2",
+    "dvc/evaluations/artificial_split/distilroberta_num_3",
+    "dvc/evaluations/artificial_split/distilroberta_num_4",
   ]
 summary_path: "dvc/summaries/artificial_split"
 xticks_format: "YY-MM"

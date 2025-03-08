@@ -96,6 +96,7 @@ def plot_indicators(grouped, indicators, output_root_path, xticks_format="YY-MM"
         os.makedirs(output_path, exist_ok=True)
         plt.legend()
         plt.savefig(os.path.join(output_path, f"{key[0]}_{key[1]}_{key[2]}.jpg"))
+        agg_indicators.to_csv(os.path.join(output_path, f"{key[0]}_{key[1]}_{key[2]}.csv"), index=False)
 
 
 def aggregate_indicators(grouped):

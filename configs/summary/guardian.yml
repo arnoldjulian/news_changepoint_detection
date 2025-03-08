@@ -13,14 +13,7 @@ evaluations:
     "dvc/evaluations/guardian/tvd_l180_num_3",
     "dvc/evaluations/guardian/tvd_l180_num_4",
   ]
-  "FF,embedding,L=180": [
-    "dvc/evaluations/guardian/confusion_ff_embed_l180",
-    "dvc/evaluations/guardian/confusion_ff_embed_l180_num_1",
-    "dvc/evaluations/guardian/confusion_ff_embed_l180_num_2",
-    "dvc/evaluations/guardian/confusion_ff_embed_l180_num_3",
-    "dvc/evaluations/guardian/confusion_ff_embed_l180_num_4",
-  ]
-  "distilroberta1,L=180": [
+  "distilroberta,L=180": [
     "dvc/evaluations/guardian/distilroberta",
     "dvc/evaluations/guardian/distilroberta_num_1",
     "dvc/evaluations/guardian/distilroberta_num_2",

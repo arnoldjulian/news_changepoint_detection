@@ -30,6 +30,8 @@ def main(base_config: dict) -> None:
     evaluations_base_path = base_config["evaluation_base_path"]
     lda_config = base_config["lda"]
     dataset_paths = base_config["selected_datasets"]
+    years_sections = [dataset_path.split(os.path.sep)[-2:] for dataset_path in dataset_paths]
+    section_ids = [value[1][:-4] for value in years_sections]
     if "selected_months" in base_config:
         selected_months = base_config["selected_months"]
         split_distance = base_config["tvd_l"]
@@ -42,6 +44,8 @@ def main(base_config: dict) -> None:
             end_date = end_date + timedelta(days=split_distance)
             time_interval = f"{start_date}-{end_date}"
             selected_data_intervals.append(time_interval)
+    else:
+        selected_data_intervals = [value[0] for value in years_sections]
 
     all_events = load_all_events(base_config)
 
@@ -58,10 +62,8 @@ def main(base_config: dict) -> None:
 
         deltas_df, tvds = get_tvd_metrics(all_events, config, dataset_paths, lda_config)
 
-        for tvd, dataset_path in zip(tvds, dataset_paths):
-            year, secion_id = dataset_path.split(os.path.sep)[-2:]
-            secion_id = secion_id[:-4]
-            indicator_path = os.path.join(evaluation_path, f"{year}_{secion_id}_indicators.csv")
+        for tvd, selected_data_interval, section_id in zip(tvds, selected_data_intervals, section_ids):
+            indicator_path = os.path.join(evaluation_path, f"{selected_data_interval}_{section_id}_indicators.csv")
             tvd.to_csv(indicator_path, index=False)
 
         deltas_df.to_csv(os.path.join(evaluation_path, "deltas.csv"), index=False)
