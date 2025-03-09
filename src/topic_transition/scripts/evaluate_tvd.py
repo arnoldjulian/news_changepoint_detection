@@ -34,15 +34,10 @@ def main(base_config: dict) -> None:
     section_ids = [value[1][:-4] for value in years_sections]
     if "selected_months" in base_config:
         selected_months = base_config["selected_months"]
-        split_distance = base_config["tvd_l"]
         selected_data_intervals = []
         for selected_month in selected_months:
             selected_year, selected_month = selected_month.split("-")
-            start_date = date(int(selected_year), int(selected_month), 1)
-            end_date = start_date + relativedelta(months=1)
-            start_date = start_date - timedelta(days=split_distance)
-            end_date = end_date + timedelta(days=split_distance)
-            time_interval = f"{start_date}-{end_date}"
+            time_interval = f"{selected_year}-{selected_month}"
             selected_data_intervals.append(time_interval)
     else:
         selected_data_intervals = [value[0] for value in years_sections]

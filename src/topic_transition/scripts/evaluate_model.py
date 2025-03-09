@@ -52,9 +52,12 @@ def main(config: dict) -> None:
 
     all_events = []
     for events_path in selected_events:
-        year, section_id = events_path.split(os.path.sep)[-2:]
+        year_or_month, section_id = events_path.split(os.path.sep)[-2:]
         section_id = section_id.split(".")[0]
-        dataset_path = os.path.join(dataset_base_path, year, f"{section_id}.pkl")
+        if year_or_month.isdigit():
+            dataset_path = os.path.join(dataset_base_path, year_or_month, f"{section_id}.pkl")
+        else:
+            dataset_path = os.path.join(dataset_base_path, year_or_month.split("-")[0], f"{section_id}.pkl")
         dataset = pd.read_pickle(dataset_path)
         dataset["date"] = pd.to_datetime(dataset["webPublicationDate"]).dt.date
         events = pd.read_csv(events_path)

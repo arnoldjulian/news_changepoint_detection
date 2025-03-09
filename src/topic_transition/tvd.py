@@ -107,6 +107,7 @@ def get_tvd_metrics(all_events, config, dataset_paths, lda_config):
         tvd_l = int(config["tvd_l"])
     first_split_date = config["first_split_date"] if "first_split_date" in config else None
     first_split_idx = config["first_split_idx"] if "first_split_idx" in config else None
+    path_parts = [dataset_path.split(os.path.sep)[-2:] for dataset_path in dataset_paths]
     with Pool(processes=config["processes"]) as pool:
         lda_paths = config["lda_paths"]
         func = partial(
@@ -122,13 +123,13 @@ def get_tvd_metrics(all_events, config, dataset_paths, lda_config):
         else:
             selected_months = [None for _ in range(len(dataset_paths))]
 
+        time_intervals = [path.split(os.path.sep)[-2] for path in config["selected_events"]]
+
         tvds = tqdm(pool.starmap(func, zip(dataset_paths, lda_paths, selected_months)), "Calculating TVDs")
     with Pool(processes=config["processes"]) as pool:
         func = partial(calculate_deltas_for_dataset, tvd_l=config["tvd_l"])
-        path_parts = [dataset_path.split(os.path.sep)[-2:] for dataset_path in dataset_paths]
-        years = [parts[0] for parts in path_parts]
         section_ids = [parts[1].split(".")[0] for parts in path_parts]
-        results = tqdm(pool.starmap(func, zip(years, section_ids, all_events, tvds)), "Calculating deltas")
+        results = tqdm(pool.starmap(func, zip(time_intervals, section_ids, all_events, tvds)), "Calculating deltas")
     deltas_df = pd.concat(results, ignore_index=True)
     return deltas_df, tvds
 
@@ -169,7 +170,7 @@ def calculate_topic_distribution_from_base_path(
 
 
 def calculate_deltas_for_dataset(
-    year: str, section_id: str, events: pd.DataFrame, tvd: pd.DataFrame, tvd_l: int
+    time_interval: str, section_id: str, events: pd.DataFrame, tvd: pd.DataFrame, tvd_l: int
 ) -> pd.DataFrame:
     """Calculate deltas for all possible methods."""
     deltas: dict[str, list] = {
@@ -177,7 +178,7 @@ def calculate_deltas_for_dataset(
         "delta": [],
         "date": [],
         "description": [],
-        "year": [],
+        "time_interval": [],
         "section_id": [],
     }
 
@@ -198,6 +199,6 @@ def calculate_deltas_for_dataset(
     deltas["delta"].append(min_delta)
     deltas["date"].append(closest_event["date"])
     deltas["description"].append(closest_event["description"])
-    deltas["year"].append(year)
+    deltas["time_interval"].append(time_interval)
     deltas["section_id"].append(section_id)
     return pd.DataFrame.from_dict(deltas)

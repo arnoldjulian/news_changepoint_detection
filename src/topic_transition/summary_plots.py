@@ -181,7 +181,7 @@ def load_event_deltas(evaluation_path):
     if "evaluation_path" in events.columns:
         events.drop(["evaluation_path"], axis=1, inplace=True)
     events.reset_index(inplace=True, drop=True)
-    events.rename({"section_id": "section", "year": "time_interval"}, axis=1, inplace=True)
+    events.rename({"section_id": "section"}, axis=1, inplace=True)
     events["time_interval"] = events["time_interval"].astype("string")
     events["date"] = pd.to_datetime(events["date"])
     events["year"] = events["date"].dt.year

@@ -48,11 +48,11 @@ def calculate_deltas_for_dataset(
         "date": [],
         "description": [],
         "evaluation_path": [],
-        "year": [],
+        "time_interval": [],
         "section_id": [],
     }
 
-    year, section_id = training_path.split(os.path.sep)[-3:-1]
+    year_or_month, section_id = training_path.split(os.path.sep)[-3:-1]
 
     indicators_path = os.path.join(training_path, "indicator_values.csv")
     indicators = pd.read_csv(indicators_path)
@@ -69,13 +69,13 @@ def calculate_deltas_for_dataset(
                 min_delta = delta
         return closest_event, min_delta
 
-    indicators.to_csv(os.path.join(evaluation_path, f"{year}_{section_id}_indicators.csv"), index=False)
+    indicators.to_csv(os.path.join(evaluation_path, f"{year_or_month}_{section_id}_indicators.csv"), index=False)
     closest_event, min_delta = get_closest(indicator_max_date, events)
     deltas["model_name"].append(model_name)
     deltas["delta"].append(min_delta)
     deltas["date"].append(closest_event["date"])
     deltas["description"].append(closest_event["description"])
     deltas["evaluation_path"].append(evaluation_path)
-    deltas["year"].append(year)
+    deltas["time_interval"].append(year_or_month)
     deltas["section_id"].append(section_id)
     return pd.DataFrame.from_dict(deltas)
