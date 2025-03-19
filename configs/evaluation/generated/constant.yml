@@ -1,0 +1,25 @@
+training_name: constant
+dataset_base_path: "dvc/datasets/generated"
+evaluation_base_path: "dvc/evaluations/generated"
+model_name: "constant"
+selected_trainings: [
+  "dvc/trainings/generated/2007/world/constant",
+  "dvc/trainings/generated/2010/world/constant",
+  "dvc/trainings/generated/2012/world/constant",
+  "dvc/trainings/generated/2014/world/constant",
+  "dvc/trainings/generated/2019/world/constant",
+  "dvc/trainings/generated/2020/world/constant",
+  "dvc/trainings/generated/2021/world/constant",
+  "dvc/trainings/generated/2022/world/constant",
+]
+selected_events: [
+  "dvc/events/generated/2007/world.csv",
+  "dvc/events/generated/2010/world.csv",
+  "dvc/events/generated/2012/world.csv",
+  "dvc/events/generated/2014/world.csv",
+  "dvc/events/generated/2019/world.csv",
+  "dvc/events/generated/2020/world.csv",
+  "dvc/events/generated/2021/world.csv",
+  "dvc/events/generated/2022/world.csv",
+]
+processes:

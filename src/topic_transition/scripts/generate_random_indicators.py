@@ -1,11 +1,10 @@
 """Script for training a model on all available datasets."""
 import argparse
 import logging
-import re
 
 import yaml
 
-from topic_transition.training import train_on_single_dataset
+from topic_transition.training import generate_random_indicators_for_dataset
 from topic_transition.utils import set_random_seed
 
 logger = logging.getLogger("train_with_single_dataset")
@@ -20,46 +19,11 @@ def process_training(dataset_path, selected_month, base_config=None):
         selected_year, selected_month = selected_month.split("-")
         config["selected_year"] = int(selected_year)
         config["selected_month"] = int(selected_month)
-    train_on_single_dataset(config)
-
-
-
-def sanity_check(config):
-    # Extract lists from config
-    datasets = config["datasets"]
-    months = config["selected_months"]
-
-    # Check list size
-    assert len(datasets) == len(months), (
-        f"List size mismatch: datasets({len(datasets)}) and selected_months({len(months)})"
-    )
-
-    # Check each dataset and month pairing
-    for idx, (dataset, month) in enumerate(zip(datasets, months)):
-        # Extract fields using regex
-        dataset_match = re.match(r".*/(\d{4})/([\w\-]+).csv", dataset)
-        month_match = re.match(r"(\d{4})-(\d{2})", month)
-
-        # Assert valid formatting
-        assert dataset_match, f"Invalid dataset format at index {idx}: {dataset}"
-        assert month_match, f"Invalid month format at index {idx}: {month}"
-
-        # Extract year and category for the dataset and year, month from selected_months
-        dataset_year, dataset_category = dataset_match.groups()
-        month_year, month_month = month_match.groups()
-
-        # Assert year consistency
-        assert dataset_year == month_year, (
-            f"Year mismatch at index {idx}: dataset({dataset_year}), month({month_year})"
-        )
-
-        # (Optional): You could also validate the category if needed, but it's not required for months
-
+    generate_random_indicators_for_dataset(config)
 
 
 def main(base_config) -> None:
     """Do all trainings for all months or years."""
-    sanity_check(base_config)
     dataset_paths = base_config["datasets"]
     set_random_seed(base_config["deterministic"])
     if "selected_months" in base_config:

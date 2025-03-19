@@ -178,7 +178,11 @@ def fetch_data_for_interval(
             all_interval_paths.append(interval_path)
             if os.path.isfile(interval_path):
                 logger.warning(f"Loading data for {year} / {dt_interval} from disk")
-                interval_data = pd.read_pickle(interval_path)
+
+                if interval_path.endswith(".csv"):
+                    interval_data = pd.read_csv(interval_path)
+                else:
+                    interval_data = pd.read_pickle(interval_path)
             else:
                 try:
                     md = get_interval_metadata(start_date, end_date, [section], guardian_api_key)

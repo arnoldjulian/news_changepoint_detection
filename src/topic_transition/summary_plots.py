@@ -116,61 +116,25 @@ def aggregate_indicators(grouped):
     return indicators
 
 
-def get_indicators_with_event(config):
+
+
+def get_all_iteration_deltas(config):
     """Get DataFrame with all indicators."""
-    all_indicators = []
+    all_deltas = []
     for model in config["evaluations"]:
-        first_iter_path = config["evaluations"][model][0]
-        event_deltas = load_event_deltas(first_iter_path)
-
-        indicators_data = {
-            "time_interval": [],
-            "section": [],
-            "model": [],
-            "baseline_model": [],
-            "indicator_path": [],
-            "indicator_filename": [],
-        }
-
         for iteration_path in config["evaluations"][model]:
-            indicator_paths = glob(os.path.join(iteration_path, "*_indicators.csv"))
-            for indicator_path in indicator_paths:
-                filename = os.path.basename(indicator_path)[:-4]
-                parts = filename.split("_")
+            event_deltas = load_event_deltas(iteration_path)
+            dirname = iteration_path.split(os.path.sep)[-1]
+            parts = dirname.split("_num_")
+            if len(parts) > 1:
+                iteration = int(parts[-1])
+            else:
+                iteration = 0
+            event_deltas["iteration"] = iteration
+            event_deltas["model"] = model
 
-                if len(parts) == 5:
-                    interval = parts[0]
-                    section = "_".join(parts[1:3])
-                elif len(parts) == 4:
-                    interval = "_".join(parts[:2])
-                    section = parts[2]
-                elif len(parts) == 3:
-                    interval = parts[0]
-                    section = parts[-2]
-                else:
-                    raise ValueError(f"Invalid indicators file: {indicator_path}")
-
-                indicators_data["time_interval"].append(interval)
-                indicators_data["section"].append(section)
-                indicators_data["model"].append(model)
-                if "TVD" in model:
-                    baseline_model = pd.NA
-                else:
-                    L = model.split(",")[-1].split("=")[-1]
-                    baseline_model = f"TVD,L={L}"
-                indicators_data["baseline_model"].append(baseline_model)
-                indicators_data["indicator_path"].append(indicator_path)
-                indicators_data["indicator_filename"].append(filename[: -len("_indicators")])
-        indicator_df = pd.DataFrame.from_dict(indicators_data)
-        if event_deltas is not None:
-            indicator_df = indicator_df.merge(
-                event_deltas.rename(columns={"date": "event_date"}), on=["section", "time_interval"], how="inner"
-            )
-        all_indicators.append(indicator_df)
-    indicator_df = pd.concat(all_indicators, ignore_index=True)
-    indicator_df["indicator_fname"] = indicator_df["indicator_path"].apply(lambda path: path.split(os.path.sep)[-1])
-    indicator_df.drop_duplicates("indicator_path", inplace=True)
-    return indicator_df
+            all_deltas.append(event_deltas)
+    return pd.concat(all_deltas, ignore_index=True)
 
 
 def load_event_deltas(evaluation_path):
@@ -185,11 +149,12 @@ def load_event_deltas(evaluation_path):
     events["time_interval"] = events["time_interval"].astype("string")
     events["date"] = pd.to_datetime(events["date"])
     events["year"] = events["date"].dt.year
-    events["date"] = events["date"].dt.date
+    events["event_date"] = events["date"].dt.date
     events.drop_duplicates(subset=["date", "section"], inplace=True, ignore_index=True)
     # In the artificial split data the sections have a special format that is incompatible
     if np.all(events["section"].apply(lambda section: len(section.split("_"))) == 3):
         events["section"] = events["section"].apply(lambda section: "_".join(section.split("_")[:2]))
+    events["indicator_path"] = evaluation_path + os.path.sep + events["time_interval"] + "_" +  events["section"] + "_indicators.csv"
     return events
 
 
@@ -200,7 +165,7 @@ def generate_summary_plots(config):
     output_path = summary_path
 
     os.makedirs(output_path, exist_ok=True)
-    indicator_df = get_indicators_with_event(config)
-    grouped = indicator_df.groupby(["time_interval", "section", "model", "indicator_fname"])
+    indicator_df = get_all_iteration_deltas(config)
+    grouped = indicator_df.groupby(["time_interval", "section", "model", "iteration"])
     indicators = aggregate_indicators(grouped)
     plot_indicators(grouped, indicators, output_path, config["xticks_format"])

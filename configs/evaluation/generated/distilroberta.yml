@@ -22,14 +22,4 @@ selected_events: [
   "dvc/events/generated/2021/world.csv",
   "dvc/events/generated/2022/world.csv",
 ]
-lda_paths: [
-  "dvc/lda/generated/2007",
-  "dvc/lda/generated/2010",
-  "dvc/lda/generated/2012",
-  "dvc/lda/generated/2014",
-  "dvc/lda/generated/2019",
-  "dvc/lda/generated/2020",
-  "dvc/lda/generated/2021",
-  "dvc/lda/generated/2022",
-]
 processes:

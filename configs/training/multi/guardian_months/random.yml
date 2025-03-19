@@ -1,39 +1,10 @@
-training:
-  name: "random"
-  confusion:
-    split_distance: 8
-datasets: [
-    "dvc/datasets/guardian_extended/2000-7-1_2002-6-30/world.pkl",
-    "dvc/datasets/guardian_extended/2007-7-1_2009-6-30/world.pkl",
-    "dvc/datasets/guardian_extended/2015-7-1_2017-6-30/uk-news.pkl",
-    "dvc/datasets/guardian_extended/2015-7-1_2017-6-30/us-news.pkl",
-    "dvc/datasets/guardian_extended/2019-7-1_2021-6-30/us-news.pkl",
-    "dvc/datasets/guardian_extended/2020-7-1_2022-6-30/us-news.pkl",
-    "dvc/datasets/guardian_extended/2020-7-1_2022-6-30/world.pkl",
-    "dvc/datasets/guardian_extended/2021-7-1_2023-6-30/us-news.pkl",
-    "dvc/datasets/guardian_extended/2021-7-1_2023-6-30/world.pkl",
-    "dvc/datasets/guardian_extended/1999-7-1_2001-6-30/us-news.pkl",
-    "dvc/datasets/guardian_extended/2001-7-1_2003-6-30/world.pkl",
-    "dvc/datasets/guardian_extended/2013-7-1_2015-6-30/world.pkl",
-    "dvc/datasets/guardian_extended/2019-7-1_2021-6-30/world.pkl",
-]
-selected_months: [
-    "2001-09",
-    "2008-09",
-    "2016-06",
-    "2016-11",
-    "2020-11",
-    "2021-01",
-    "2021-08",
-    "2022-06",
-    "2022-02",
-    "2000-12",
-    "2002-12",
-    "2014-06",
-    "2020-08",
-]
-general:
-  trainings_root: dvc/trainings/guardian_months
+name: "random"
+first_split_idx: 15
+split_distance: 8
+datasets:
+
+selected_months:
+
+trainings_root: dvc/trainings/guardian_months
 overwrite_trainings: new
 deterministic: False
-random: True

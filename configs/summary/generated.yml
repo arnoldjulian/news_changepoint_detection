@@ -1,4 +1,18 @@
 evaluations:
+  "constant": [
+    "dvc/evaluations/generated/constant",
+    "dvc/evaluations/generated/constant_num_1",
+    "dvc/evaluations/generated/constant_num_2",
+    "dvc/evaluations/generated/constant_num_3",
+    "dvc/evaluations/generated/constant_num_4",
+  ]
+  "random": [
+    "dvc/evaluations/generated/random",
+    "dvc/evaluations/generated/random_num_1",
+    "dvc/evaluations/generated/random_num_2",
+    "dvc/evaluations/generated/random_num_3",
+    "dvc/evaluations/generated/random_num_4",
+  ]
   "TVD,L=8": [
     "dvc/evaluations/generated/tvd8",
     "dvc/evaluations/generated/tvd8_num_1",
@@ -13,7 +27,7 @@ evaluations:
     "dvc/evaluations/generated/tvd10_num_3",
     "dvc/evaluations/generated/tvd10_num_4",
   ]
-  "distilroberta1,L=8": [
+  "distilroberta,L=8": [
     "dvc/evaluations/generated/distilroberta",
     "dvc/evaluations/generated/distilroberta_num_1",
     "dvc/evaluations/generated/distilroberta_num_2",

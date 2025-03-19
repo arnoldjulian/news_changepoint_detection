@@ -95,14 +95,27 @@ def get_f1_scores(pred: np.ndarray, ref: np.ndarray) -> np.ndarray:
     return f1s
 
 
-def increment_path_number(path: str) -> str:
-    """Create a new path with an incremented numerical suffix for 'num_<number>'."""
+def get_training_path(path: str) -> str | None:
+    """Create a new path with the smallest missing numerical suffix for 'num_<number>'."""
     training_paths = glob.glob(path + "_num_*")
-    training_nums = [int(re.match(r".*_num_(\d+)$", tr_path).group(1)) for tr_path in training_paths]
-    new_training_num = max(training_nums) + 1 if training_nums else 1
-    new_path = f"{path}_num_{new_training_num}"
-
-    return new_path
+    training_nums = [0] + sorted([int(re.match(r".*_num_(\d+)$", tr_path).group(1)) for tr_path in training_paths])
+    max_num = max(training_nums)
+    for tr_num in range(max_num + 1):
+        if tr_num == 0:
+            tr_path = path
+        else:
+            tr_path = f"{path}_num_{tr_num}"
+        indicator_path = os.path.join(tr_path, "indicator_values.csv")
+        if not os.path.exists(indicator_path):
+            if tr_num > 4:
+                return None
+            else:
+                return tr_path
+    new_num = max_num + 1
+    if new_num > 4:
+        return None
+    tr_path = f"{path}_num_{new_num}"
+    return tr_path
 
 
 def find_matching_directories(base_path: str) -> list:
@@ -136,7 +149,7 @@ def load_or_train_lda(dataset, force_new_tvd, lda_config, lda_path):
         with open(dictionary_path, "wb") as fw:
             pickle.dump(dictionary, fw)
     if os.path.exists(lda_path) and force_new_tvd:
-        lda_path = increment_path_number(lda_path)
+        lda_path = get_training_path(lda_path)
     os.makedirs(lda_path, exist_ok=True)
     lda_model_path = os.path.join(lda_path, "lda.model")
     if os.path.exists(lda_model_path):

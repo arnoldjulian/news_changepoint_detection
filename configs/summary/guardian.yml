@@ -1,5 +1,5 @@
 evaluations:
-  "random,L=180": [
+  "random": [
     "dvc/evaluations/guardian/random",
     "dvc/evaluations/guardian/random_num_1",
     "dvc/evaluations/guardian/random_num_2",

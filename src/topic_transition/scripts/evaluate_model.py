@@ -1,6 +1,7 @@
 """Tools for evaluating a specific trained model."""
 import argparse
 import os
+import re
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
@@ -42,8 +43,45 @@ def find_files_with_prefixes(
     return adjusted_trainings, adjusted_events, evaluation_paths
 
 
+
+def sanity_check(config):
+    # Extract lists from config
+    trainings = config["selected_trainings"]
+    events = config["selected_events"]
+
+    # Check list size
+    assert len(trainings) == len(events), (
+        f"List size mismatch: trainings({len(trainings)}) and events({len(events)})"
+    )
+
+    # Check each pair of training and event
+    for idx, (training, event) in enumerate(zip(trainings, events)):
+        # Extract data using regex
+        training_match = re.match(r".*/(\d{4})-(\d{2})/([\w\-]+)/", training)
+        event_match = re.match(r".*/(\d{4})/([\w\-]+).csv", event)
+
+        # Assert valid formatting
+        assert training_match, f"Invalid training format at index {idx}: {training}"
+        assert event_match, f"Invalid event format at index {idx}: {event}"
+
+        # Extract year and category
+        training_year, _, training_category = training_match.groups()
+        event_year, event_category = event_match.groups()
+
+        # Assert year consistency
+        assert training_year == event_year, (
+            f"Year mismatch at index {idx}: training({training_year}), event({event_year})"
+        )
+
+        # Assert category consistency
+        assert training_category == event_category, (
+            f"Category mismatch at index {idx}: training({training_category}), event({event_category})"
+        )
+
+
 def main(config: dict) -> None:
     """Evaluate all trainings of a selected model type, including multiple iterations of the same training."""
+    sanity_check(config)
     model_name = config["model_name"]
     evaluations_base_path = config["evaluation_base_path"]
     selected_trainings = config["selected_trainings"]
@@ -55,10 +93,13 @@ def main(config: dict) -> None:
         year_or_month, section_id = events_path.split(os.path.sep)[-2:]
         section_id = section_id.split(".")[0]
         if year_or_month.isdigit():
-            dataset_path = os.path.join(dataset_base_path, year_or_month, f"{section_id}.pkl")
+            dataset_path = os.path.join(dataset_base_path, year_or_month, f"{section_id}.csv")
         else:
-            dataset_path = os.path.join(dataset_base_path, year_or_month.split("-")[0], f"{section_id}.pkl")
-        dataset = pd.read_pickle(dataset_path)
+            dataset_path = os.path.join(dataset_base_path, year_or_month.split("-")[0], f"{section_id}.csv")
+        if dataset_path.endswith(".csv"):
+            dataset = pd.read_csv(dataset_path)
+        else:
+            dataset = pd.read_pickle(dataset_path)
         dataset["date"] = pd.to_datetime(dataset["webPublicationDate"]).dt.date
         events = pd.read_csv(events_path)
         events["date"] = pd.to_datetime(events["date"]).dt.date

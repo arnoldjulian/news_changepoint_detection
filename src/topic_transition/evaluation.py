@@ -19,11 +19,13 @@ def load_dataset(
         year, section_id = training_path.split(os.path.sep)[-3:-1]
         dataset_path = os.path.join(dataset_base_path, year)
         dataset_path = os.path.join(dataset_path, f"{section_id}.pkl")
-    elif dataset_path is not None:
-        dataset_path = pd.read_pickle(dataset_path)
     else:
         raise ValueError("No dataset path provided!")
-    dataset = pd.read_pickle(dataset_path)  # type: ignore
+    if dataset_path.endswith('.csv'):
+        dataset = pd.read_csv(dataset_path)  # type: ignore
+    else:
+        dataset = pd.read_pickle(dataset_path)  # type: ignore
+
     dataset["date"] = pd.to_datetime(dataset["webPublicationDate"]).dt.date
     return dataset
 

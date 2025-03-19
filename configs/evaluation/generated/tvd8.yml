@@ -1,21 +1,21 @@
 training_name: tvd8
 evaluation_base_path: "dvc/evaluations/generated"
 model_name: "tvd8"
-first_split_idx: 2
+first_split_idx: 15
 lda:
   num_topics: 20
   iterations: 83
   passes: 22
   chunksize: 319
 selected_datasets: [
-  "dvc/datasets/generated/2007/world.pkl",
-  "dvc/datasets/generated/2010/world.pkl",
-  "dvc/datasets/generated/2012/world.pkl",
-  "dvc/datasets/generated/2014/world.pkl",
-  "dvc/datasets/generated/2019/world.pkl",
-  "dvc/datasets/generated/2020/world.pkl",
-  "dvc/datasets/generated/2021/world.pkl",
-  "dvc/datasets/generated/2022/world.pkl",
+  "dvc/datasets/generated/2007/world.csv",
+  "dvc/datasets/generated/2010/world.csv",
+  "dvc/datasets/generated/2012/world.csv",
+  "dvc/datasets/generated/2014/world.csv",
+  "dvc/datasets/generated/2019/world.csv",
+  "dvc/datasets/generated/2020/world.csv",
+  "dvc/datasets/generated/2021/world.csv",
+  "dvc/datasets/generated/2022/world.csv",
 ]
 selected_events: [
   "dvc/events/generated/2007/world.csv",

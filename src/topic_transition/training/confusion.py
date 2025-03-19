@@ -14,6 +14,7 @@ from torch import nn as nn
 from torch import optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
+from zmq.backend import first
 
 from topic_transition.data import get_splits
 from topic_transition.loss import BCEWithWeights
@@ -51,24 +52,12 @@ def get_dataloaders(
     train_idxs: list[int],
     val_idxs: list[int],
     config: dict,
-    dataset_path: str,
     vectorizer_type: str,
 ) -> tuple[DataLoader, DataLoader | None, int]:
     """Get dataloaders for non-llm model."""
-    vectors_path = dataset_path.replace("pkl", "tfidf")
-    if vectorizer_type == "tfidf" and os.path.exists(vectors_path):
-        with open(vectors_path, "rb") as f:
-            vectors = pickle.load(f)
-    else:
-        vectorizer = get_vectorizer(vectorizer_type)
-        vectors = vectorizer.fit_transform(data["full_text"])
-        if vectorizer_type == "tfidf":
-            with open(vectors_path, "wb") as f:
-                pickle.dump(vectors, f)
-    if vectorizer_type == "tfidf":
-        data["vector"] = [vectors.getrow(i) for i in range(vectors.shape[0])]  # type: ignore
-    else:
-        data["vector"] = [vectors[i] for i in range(vectors.shape[0])]
+    vectorizer = get_vectorizer(vectorizer_type)
+    vectors = vectorizer.fit_transform(data["full_text"])
+    data["vector"] = [vectors[i] for i in range(vectors.shape[0])]
     train_loader = get_single_dataloader(data, train_idxs, batch_size, shuffle=True, dtype=torch_dtype)
     if 1.0 > config["train_ratio"] > 0.0:
         val_loader = get_single_dataloader(data, val_idxs, batch_size, shuffle=False, dtype=torch_dtype)
@@ -77,15 +66,11 @@ def get_dataloaders(
     return train_loader, val_loader, int(vectors.shape[1])
 
 
-def set_labels(data: pd.DataFrame, first_split_idx: int):
+def set_labels(data: pd.DataFrame, split_dates: list[date] | None = None) -> None:
     """Set labels for each article according to the confusion scheme."""
-    start_date = data["date"].iloc[0]
-    end_date = data["date"].iloc[-1]
-    dates = get_dates_for_interval(start_date, end_date)
-    # We cannot have a split on the very edges.
-    labels = np.empty((len(data), len(dates) - 2 * first_split_idx))
+    labels = np.empty((len(data), len(split_dates)))
     for article_idx, row in data.iterrows():
-        for tr_idx, transition_date in enumerate(dates[first_split_idx:-first_split_idx]):
+        for tr_idx, transition_date in enumerate(split_dates):
             article_date = row["date"]
             if article_date < transition_date:
                 labels[article_idx, tr_idx] = 0
@@ -170,8 +155,9 @@ def calculate_batch_side_accuracy(split_labels: Tensor, split_predictions: Tenso
     return batch_neg_accuracies
 
 
-def train_confusion(data: pd.DataFrame, train_out: str, config: dict, dataset_path: str, vectorizer_type: str) -> None:
+def train_confusion(data: pd.DataFrame, train_out: str, config: dict, vectorizer_type: str) -> None:
     """Train a model with confusion scheme."""
+    split_distance = config["split_distance"]
     if "first_split_date" in config:
         first_split_date = config["first_split_date"]
         start_date = data["date"].iloc[0]
@@ -181,15 +167,19 @@ def train_confusion(data: pd.DataFrame, train_out: str, config: dict, dataset_pa
         if first_split_date not in dates_mm_dd:
             raise ValueError(f"Invalid first split date: {first_split_date}")
         first_split_idx = dates_mm_dd.index(first_split_date)
-    else:
+    elif "first_split_idx" in config:
         first_split_idx = config["first_split_idx"]
+    else:
+        first_split_idx = split_distance
 
-    split_distance = config["split_distance"]
-    set_labels(data, first_split_idx)
     start_date = data["date"].iloc[0]
     end_date = data["date"].iloc[-1]
     dates = get_dates_for_interval(start_date, end_date)
-    split_dates = dates[first_split_idx:-first_split_idx]
+    if first_split_idx > 0:
+        split_dates = dates[first_split_idx:-first_split_idx]
+    else:
+        split_dates = dates
+    set_labels(data, split_dates)
     num_splits = len(split_dates)
     train_idxs, val_idxs = get_splits(data, train_ratio=config["train_ratio"])
     batch_size = config["batch_size"]
@@ -197,7 +187,7 @@ def train_confusion(data: pd.DataFrame, train_out: str, config: dict, dataset_pa
     torch.set_default_dtype(torch_dtype)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     train_loader, val_loader, input_dim = get_dataloaders(
-        batch_size, data, torch_dtype, train_idxs, val_idxs, config, dataset_path, vectorizer_type
+        batch_size, data, torch_dtype, train_idxs, val_idxs, config, vectorizer_type
     )
     model = FFConfusion(input_dim, num_splits).type(torch_dtype).to(device)
     optimizer = optim.Adam(model.parameters(), lr=float(config["learning_rate"]))
@@ -223,6 +213,7 @@ def train_confusion(data: pd.DataFrame, train_out: str, config: dict, dataset_pa
     loss_df = pd.DataFrame.from_dict(per_epoch_losses)
     loss_df.to_csv(os.path.join(train_out, "per_epoch_losses.csv"), index=False)
     indicators_path = os.path.join(train_out, "indicator_values.csv")
+    model_path = os.path.join(train_out, "best_model_checkpoint.pth")
     model = torch.load(os.path.join(train_out, "best_model_checkpoint.pth"), weights_only=False)
     indicator_df = calculate_indicators(val_loader, model, device, dates, first_split_idx, split_distance)
     indicator_df.to_csv(indicators_path, index=False)
@@ -231,6 +222,7 @@ def train_confusion(data: pd.DataFrame, train_out: str, config: dict, dataset_pa
     loss_df.plot(x="epoch", y=["train", "val"], kind="line")
     plt.title("Training and Validation Loss Over Time (Normalized)")
     plt.savefig(os.path.join(train_out, "losses.png"))
+    os.remove(model_path)
 
 
 def train_epoch(

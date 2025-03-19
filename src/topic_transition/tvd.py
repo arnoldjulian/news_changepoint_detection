@@ -76,7 +76,11 @@ def calculate_topict_distribution_tvd(
     first_split_idx: int | None = None,
 ):
     """Calculate deltas for all possible methods."""
-    dataset = pd.read_pickle(dataset_path)
+    if dataset_path.endswith(".csv"):
+        dataset = pd.read_csv(dataset_path)
+    else:
+        dataset = pd.read_pickle(dataset_path)
+
     dataset["date"] = pd.to_datetime(dataset["webPublicationDate"]).dt.date
 
     if selected_month is not None:

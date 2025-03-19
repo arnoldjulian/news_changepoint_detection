@@ -15,6 +15,9 @@ def bold_max_min_in_column(mean, stde, optimal_value):
 
 def split_model_name(model_name: str) -> tuple[str, str, float | int]:
     """Split the model_name2 into base model and L value."""
+    if model_name in ["random", "constant"]:
+        return model_name, None, -1
+
     parts = model_name.split(",L=")
     base_model = parts[0]
 
