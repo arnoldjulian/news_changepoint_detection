@@ -95,7 +95,7 @@ def get_f1_scores(pred: np.ndarray, ref: np.ndarray) -> np.ndarray:
     return f1s
 
 
-def get_training_path(path: str) -> str | None:
+def get_training_path(path: str, max_iterations=5) -> str | None:
     """Create a new path with the smallest missing numerical suffix for 'num_<number>'."""
     training_paths = glob.glob(path + "_num_*")
     training_nums = [0] + sorted([int(re.match(r".*_num_(\d+)$", tr_path).group(1)) for tr_path in training_paths])
@@ -107,12 +107,12 @@ def get_training_path(path: str) -> str | None:
             tr_path = f"{path}_num_{tr_num}"
         indicator_path = os.path.join(tr_path, "indicator_values.csv")
         if not os.path.exists(indicator_path):
-            if tr_num > 4:
+            if tr_num >= max_iterations:
                 return None
             else:
                 return tr_path
     new_num = max_num + 1
-    if new_num > 4:
+    if new_num >= max_iterations:
         return None
     tr_path = f"{path}_num_{new_num}"
     return tr_path

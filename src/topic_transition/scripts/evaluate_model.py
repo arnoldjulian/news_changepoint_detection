@@ -22,6 +22,12 @@ def find_files_with_prefixes(
     adjusted_event_paths = []
     evaluation_paths = []
     for selected_training, event, event_path in zip(selected_trainings, all_events, event_paths, strict=True):
+        time_interval = selected_training.split(os.path.sep)[-3]
+        if re.match(r"\d{4}-\d{2}", time_interval):
+            month = int(time_interval.split("-")[1])
+            event["month"] = event["date"].apply(lambda dt: dt.month)
+            event = event[event["month"] == month]
+            assert len(event) > 0, f"No events for month {month} in {event_path}"
         abs_training = os.path.abspath(selected_training)
         adjusted_trainings.append(abs_training)
         adjusted_events.append(event)
@@ -43,39 +49,15 @@ def find_files_with_prefixes(
     return adjusted_trainings, adjusted_events, evaluation_paths
 
 
-
 def sanity_check(config):
     # Extract lists from config
-    trainings = config["selected_trainings"]
-    events = config["selected_events"]
+    if "selected_trainings" and "selected_events" in config:
+        trainings = config["selected_trainings"]
+        events = config["selected_events"]
 
-    # Check list size
-    assert len(trainings) == len(events), (
-        f"List size mismatch: trainings({len(trainings)}) and events({len(events)})"
-    )
-
-    # Check each pair of training and event
-    for idx, (training, event) in enumerate(zip(trainings, events)):
-        # Extract data using regex
-        training_match = re.match(r".*/(\d{4})-(\d{2})/([\w\-]+)/", training)
-        event_match = re.match(r".*/(\d{4})/([\w\-]+).csv", event)
-
-        # Assert valid formatting
-        assert training_match, f"Invalid training format at index {idx}: {training}"
-        assert event_match, f"Invalid event format at index {idx}: {event}"
-
-        # Extract year and category
-        training_year, _, training_category = training_match.groups()
-        event_year, event_category = event_match.groups()
-
-        # Assert year consistency
-        assert training_year == event_year, (
-            f"Year mismatch at index {idx}: training({training_year}), event({event_year})"
-        )
-
-        # Assert category consistency
-        assert training_category == event_category, (
-            f"Category mismatch at index {idx}: training({training_category}), event({event_category})"
+        # Check list size
+        assert len(trainings) == len(events), (
+            f"List size mismatch: trainings({len(trainings)}) and events({len(events)})"
         )
 
 
@@ -84,9 +66,16 @@ def main(config: dict) -> None:
     sanity_check(config)
     model_name = config["model_name"]
     evaluations_base_path = config["evaluation_base_path"]
-    selected_trainings = config["selected_trainings"]
+    if "selected_trainings" and "selected_events" in config:
+        selected_trainings = config["selected_trainings"]
+        selected_events = config["selected_events"]
+    elif "selected_trainings_events" in config:
+        selected_trainings_events = config["selected_trainings_events"]
+        selected_trainings = [pair[0] for pair in selected_trainings_events]
+        selected_events = [pair[1] for pair in selected_trainings_events]
+    else:
+        raise ValueError("No selected trainings or events found in config.")
     dataset_base_path = config["dataset_base_path"]
-    selected_events = config["selected_events"]
 
     all_events = []
     for events_path in selected_events:

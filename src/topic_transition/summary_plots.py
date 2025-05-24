@@ -116,8 +116,6 @@ def aggregate_indicators(grouped):
     return indicators
 
 
-
-
 def get_all_iteration_deltas(config):
     """Get DataFrame with all indicators."""
     all_deltas = []

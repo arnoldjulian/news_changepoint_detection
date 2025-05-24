@@ -3,7 +3,7 @@ import logging
 import os
 import random
 import re
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 import pandas as pd
 import yaml
@@ -58,7 +58,7 @@ def chunk_data(data: pd.DataFrame, chunk_size: int) -> pd.DataFrame:
     return pd.DataFrame(new_rows)
 
 
-def prepare_training_directory(config: dict, time_interval: str, section: str) -> tuple[str, str]:
+def prepare_training_directory(config: dict, time_interval: str, section: str, max_iterations=5) -> tuple[str, str]:
     """Prepare directories and paths required for model training."""
     train_out = os.path.join(config["trainings_root"], time_interval)
     train_out = os.path.join(train_out, section)
@@ -72,7 +72,7 @@ def prepare_training_directory(config: dict, time_interval: str, section: str) -
             print(f"Skipping training {train_out} because it already exists")
             return None, None
         elif overwrite == "new":
-            train_out = get_training_path(train_out)
+            train_out = get_training_path(train_out, max_iterations=max_iterations)
             if train_out is None:
                 return None, None
     os.makedirs(train_out, exist_ok=True)
@@ -131,10 +131,10 @@ def get_dataset(config):
     return data, section, time_interval
 
 
-def generate_constant_indicators_for_dataset(config: dict) -> None:
+def generate_constant_indicators_for_dataset(config: dict, prediction_day) -> None:
     """Train a single model with constant split indicator."""
     data, section, time_interval = get_dataset(config)
-    train_out, indicators_path = prepare_training_directory(config, time_interval, section)
+    train_out, indicators_path = prepare_training_directory(config, time_interval, section, 365)
     if not train_out:
         return None
 
@@ -142,15 +142,28 @@ def generate_constant_indicators_for_dataset(config: dict) -> None:
     start_date = data["date"].iloc[0]
     end_date = data["date"].iloc[-1]
     dates = get_dates_for_interval(start_date, end_date)
-    first_split_idx = config["first_split_idx"]
-    if first_split_idx > 0:
-        dates = dates[first_split_idx:-first_split_idx]
 
-    middle_split_date = dates[len(dates) // 2]
+    if "first_split_date" in config and "last_split_date" in config:
+        year = config["dataset"]["path"].split(os.sep)[-2]
+        first_split_date = datetime.strptime(f'{year}-{config["first_split_date"]}', "%Y-%m-%d").date()
+        last_split_date = datetime.strptime(f'{year}-{config["last_split_date"]}', "%Y-%m-%d").date()
+        first_split_idx = dates.index(first_split_date)
+        last_split_idx = dates.index(last_split_date) + 1
+        dates = dates[first_split_idx:last_split_idx]
+    elif "first_split_idx" in config:
+        first_split_idx = config["first_split_idx"]
+        if first_split_idx > 0:
+            dates = dates[first_split_idx:-first_split_idx]
+    else:
+        raise ValueError(
+            "Either 'first_split_date' and 'last_split_date' or 'first_split_idx' must be provided in the config.")
+
+    if len(dates) <= prediction_day:
+        return None
 
     indicator_values = pd.DataFrame({"date": dates})
     indicator_values["indicator_value"] = 0
-    indicator_values.loc[indicator_values["date"] == middle_split_date, "indicator_value"] = 1
+    indicator_values.loc[indicator_values["date"] == dates[prediction_day], "indicator_value"] = 1
 
     indicator_values.to_csv(indicators_path, index=False)
 

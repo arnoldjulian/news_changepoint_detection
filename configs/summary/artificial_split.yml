@@ -1,17 +1,20 @@
 evaluations:
+  "random": [
+    "dvc/evaluations/artificial_split/random",
+    "dvc/evaluations/artificial_split/random_num_1",
+    "dvc/evaluations/artificial_split/random_num_2",
+    "dvc/evaluations/artificial_split/random_num_3",
+    "dvc/evaluations/artificial_split/random_num_4",
+  ]
+  "constant": [
+    "dvc/evaluations/artificial_split/constant"
+  ]
   "TVD,L=180": [
     "dvc/evaluations/artificial_split/tvd180",
     "dvc/evaluations/artificial_split/tvd180_num_1",
     "dvc/evaluations/artificial_split/tvd180_num_2",
     "dvc/evaluations/artificial_split/tvd180_num_3",
     "dvc/evaluations/artificial_split/tvd180_num_4",
-  ]
-  "TVD,L=90": [
-    "dvc/evaluations/artificial_split/tvd90",
-    "dvc/evaluations/artificial_split/tvd90_num_1",
-    "dvc/evaluations/artificial_split/tvd90_num_2",
-    "dvc/evaluations/artificial_split/tvd90_num_3",
-    "dvc/evaluations/artificial_split/tvd90_num_4",
   ]
   "distilroberta,L=180": [
     "dvc/evaluations/artificial_split/distilroberta",

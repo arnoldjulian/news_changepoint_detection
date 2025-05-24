@@ -24,3 +24,4 @@ datasets: [
 trainings_root: dvc/trainings/generated
 overwrite_trainings: new
 deterministic: False
+monthly: true

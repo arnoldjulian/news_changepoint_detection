@@ -1,0 +1,28 @@
+evaluations:
+  "constant": [
+    "dvc/evaluations/guardian_months_odd/constant",
+  ]
+  "random": [
+    "dvc/evaluations/guardian_months_odd/random",
+    "dvc/evaluations/guardian_months_odd/random_num_1",
+    "dvc/evaluations/guardian_months_odd/random_num_2",
+    "dvc/evaluations/guardian_months_odd/random_num_3",
+    "dvc/evaluations/guardian_months_odd/random_num_4",
+  ]
+  "TVD,L=8": [
+    "dvc/evaluations/guardian_months_odd/tvd8",
+    "dvc/evaluations/guardian_months_odd/tvd8_num_1",
+    "dvc/evaluations/guardian_months_odd/tvd8_num_2",
+    "dvc/evaluations/guardian_months_odd/tvd8_num_3",
+    "dvc/evaluations/guardian_months_odd/tvd8_num_4",
+  ]
+  "distilroberta,L=8": [
+    "dvc/evaluations/guardian_months_odd/distilroberta",
+    "dvc/evaluations/guardian_months_odd/distilroberta_num_1",
+    "dvc/evaluations/guardian_months_odd/distilroberta_num_2",
+    "dvc/evaluations/guardian_months_odd/distilroberta_num_3",
+    "dvc/evaluations/guardian_months_odd/distilroberta_num_4",
+  ]
+summary_path: "dvc/summaries/guardian_months_odd"
+rescale_models: True
+xticks_format: "dd"

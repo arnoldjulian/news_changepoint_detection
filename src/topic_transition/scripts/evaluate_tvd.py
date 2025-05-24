@@ -15,72 +15,8 @@ nltk.download("stopwords")
 stop_words = set(stopwords.words("english"))
 
 
-def sanity_check(base_config):
-    # Extract lists from config
-    datasets = base_config["selected_datasets"]
-    events = base_config["selected_events"]
-    lda_paths = base_config["lda_paths"]
-    months = base_config["selected_months"]
-
-    # Check that all lists are of the same length
-    assert len(datasets) == len(events), (
-        f"Mismatch in list sizes: datasets({len(datasets)}) and events({len(events)})"
-    )
-    assert len(datasets) == len(lda_paths), (
-        f"Mismatch in list sizes: datasets({len(datasets)}) and lda_paths({len(lda_paths)})"
-    )
-    assert len(datasets) == len(months), (
-        f"Mismatch in list sizes: datasets({len(datasets)}) and months({len(months)})"
-    )
-
-    # Iterate over all the items and check year, month, and category consistency
-    for idx, (dataset, event, lda, month) in enumerate(zip(datasets, events, lda_paths, months)):
-        # Extract fields
-        dataset_match = re.match(r".*/(\d{4})/([\w\-]+).csv", dataset)
-        event_match = re.match(r".*/(\d{4})/([\w\-]+).csv", event)
-        lda_match = re.match(r".*/(\d{4})-(\d{2})/([\w\-]+)", lda)
-        month_match = re.match(r"(\d{4})-(\d{2})", month)
-
-        # Assert valid formatting
-        assert dataset_match, f"Invalid dataset format at index {idx}: {dataset}"
-        assert event_match, f"Invalid event format at index {idx}: {event}"
-        assert lda_match, f"Invalid lda_path format at index {idx}: {lda}"
-        assert month_match, f"Invalid month format at index {idx}: {month}"
-
-        # Extract details
-        dataset_year, dataset_category = dataset_match.groups()
-        event_year, event_category = event_match.groups()
-        lda_year, lda_month, lda_category = lda_match.groups()
-        month_year, month_month = month_match.groups()
-
-        # Assert year consistency
-        assert dataset_year == event_year, (
-            f"Year mismatch at index {idx}: dataset({dataset_year}), event({event_year})"
-        )
-        assert dataset_year == lda_year, (
-            f"Year mismatch at index {idx}: dataset({dataset_year}), lda({lda_year})"
-        )
-        assert dataset_year == month_year, (
-            f"Year mismatch at index {idx}: dataset({dataset_year}), month({month_year})"
-        )
-
-        # Assert month consistency
-        assert lda_month == month_month, (
-            f"Month mismatch at index {idx}: lda({lda_month}), month({month_month})"
-        )
-
-        # Assert category consistency
-        assert dataset_category == event_category, (
-            f"Category mismatch at index {idx}: dataset({dataset_category}), event({event_category})"
-        )
-        assert dataset_category == lda_category, (
-            f"Category mismatch at index {idx}: dataset({dataset_category}), lda({lda_category})"
-        )
-
-
 def main(base_config: dict) -> None:
     """Evaluate TVD on selected datasets."""
-    sanity_check(base_config)
     training_name = base_config["model_name"]
     repeat_evaluations = base_config["repeat_evaluations"]
     if repeat_evaluations:
@@ -91,6 +27,16 @@ def main(base_config: dict) -> None:
         training_names = [training_name]
 
     evaluations_base_path = base_config["evaluation_base_path"]
+
+    if "selected_events_months" in base_config:
+        selected_events_months = base_config["selected_events_months"]
+        base_config["selected_events"] = [pair[0] for pair in selected_events_months]
+        base_config["selected_months"] = [pair[1] for pair in selected_events_months]
+        years = [event.split(os.path.sep)[-2] for event  in base_config["selected_events"]]
+        section_ids = [event.split(os.path.sep)[-1][:-4] for event in base_config["selected_events"]]
+        base_config["selected_datasets"] = [os.path.join(base_config["dataset_base_path"], year, secton_id) + ".csv" for  (year, secton_id) in zip(years, section_ids)]
+        base_config["lda_paths"] = [os.path.join(base_config["lda_base_path"], month, secton_id) for  (month, secton_id) in zip(base_config["selected_months"], section_ids)]
+
     lda_config = base_config["lda"]
     dataset_paths = base_config["selected_datasets"]
     years_sections = [dataset_path.split(os.path.sep)[-2:] for dataset_path in dataset_paths]

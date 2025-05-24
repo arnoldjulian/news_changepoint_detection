@@ -6,6 +6,9 @@ evaluations:
     "dvc/evaluations/guardian/random_num_3",
     "dvc/evaluations/guardian/random_num_4",
   ]
+  "constant": [
+    "dvc/evaluations/guardian/constant"
+  ]
   "TVD,L=180": [
     "dvc/evaluations/guardian/tvd_l180",
     "dvc/evaluations/guardian/tvd_l180_num_1",

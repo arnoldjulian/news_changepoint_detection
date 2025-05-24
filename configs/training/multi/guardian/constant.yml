@@ -1,4 +1,4 @@
-name: "random"
+name: "constant"
 first_split_date: "01-01"
 last_split_date: "12-31"
 datasets: [
@@ -33,4 +33,3 @@ datasets: [
 trainings_root: dvc/trainings/guardian
 overwrite_trainings: new
 deterministic: False
-random: True

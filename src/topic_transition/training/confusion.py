@@ -62,7 +62,7 @@ def get_dataloaders(
     if 1.0 > config["train_ratio"] > 0.0:
         val_loader = get_single_dataloader(data, val_idxs, batch_size, shuffle=False, dtype=torch_dtype)
     else:
-        raise ValueError("Invalid train ratio: {config['train_ratio']}. Must be between 0.0 and 1.0.")
+        val_loader = train_loader
     return train_loader, val_loader, int(vectors.shape[1])
 
 

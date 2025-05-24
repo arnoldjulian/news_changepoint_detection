@@ -57,6 +57,10 @@ def calculate_deltas_for_dataset(
     year_or_month, section_id = training_path.split(os.path.sep)[-3:-1]
 
     indicators_path = os.path.join(training_path, "indicator_values.csv")
+
+    if not os.path.exists(indicators_path):
+        return pd.DataFrame.from_dict(deltas)
+
     indicators = pd.read_csv(indicators_path)
     indicators["date"] = pd.to_datetime(indicators["date"]).dt.date
     indicator_max_date = indicators.loc[indicators["indicator_value"].argmax()]["date"]  # type: ignore

@@ -6,19 +6,18 @@ learning_rate: 8e-05
 min_epochs: 1000
 max_epochs: 20000
 indicator_accuracy_weighting: True
-first_split_idx: 20
 vectorizer: "all-distilroberta-v1"
 split_distance: 180
 datasets: [
+    "dvc/datasets/artificial_split/2010/us-news_world_2010-04-15.csv",
     "dvc/datasets/artificial_split/2015/uk-news_us-news_2015-05-07.csv",
+    "dvc/datasets/artificial_split/2016/us-news_uk-news_2016-10-15.csv",
     "dvc/datasets/artificial_split/2019/uk-news_world_2019-01-18.csv",
     "dvc/datasets/artificial_split/2019/uk-news_world_2019-10-30.csv",
-    "dvc/datasets/artificial_split/2000/us-news_uk-news_2000-04-14.csv",
     "dvc/datasets/artificial_split/2019/us-news_uk-news_2019-03-27.csv",
-    "dvc/datasets/artificial_split/2010/us-news_world_2010-04-15.csv",
-    "dvc/datasets/artificial_split/2022/us-news_world_2022-02-16.csv",
-    "dvc/datasets/artificial_split/2022/us-news_world_2022-03-17.csv",
-  ]
+    "dvc/datasets/artificial_split/2019/us-news_uk-news_2019-02-16.csv",
+    "dvc/datasets/artificial_split/2022/us-news_world_2022-03-17.csv"
+]
 trainings_root: dvc/trainings/artificial_split
 overwrite_trainings: new
 deterministic: False

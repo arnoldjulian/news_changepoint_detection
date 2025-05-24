@@ -1,355 +1,98 @@
 training_name: tvd8
-training_base_path: "dvc/datasets/guardian_months"
+dataset_base_path: "dvc/datasets/guardian"
 evaluation_base_path: "dvc/evaluations/guardian_months"
-lda_base_path: "dvc/lda/guardian_months"
+lda_base_path: "dvc/lda/guardian_months_odd"
 model_name: "tvd8"
 lda:
   num_topics: 20
   iterations: 83
   passes: 22
   chunksize: 319
-selected_datasets:
-- dvc/datasets/guardian/2000/world.csv
-- dvc/datasets/guardian/2000/world.csv
-- dvc/datasets/guardian/2000/world.csv
-- dvc/datasets/guardian/2000/world.csv
-- dvc/datasets/guardian/2001/world.csv
-- dvc/datasets/guardian/2001/world.csv
-- dvc/datasets/guardian/2001/world.csv
-- dvc/datasets/guardian/2001/world.csv
-- dvc/datasets/guardian/2001/uk-news.csv
-- dvc/datasets/guardian/2001/world.csv
-- dvc/datasets/guardian/2002/world.csv
-- dvc/datasets/guardian/2002/world.csv
-- dvc/datasets/guardian/2002/world.csv
-- dvc/datasets/guardian/2007/world.csv
-- dvc/datasets/guardian/2007/uk-news.csv
-- dvc/datasets/guardian/2007/world.csv
-- dvc/datasets/guardian/2007/world.csv
-- dvc/datasets/guardian/2008/world.csv
-- dvc/datasets/guardian/2008/world.csv
-- dvc/datasets/guardian/2008/world.csv
-- dvc/datasets/guardian/2008/world.csv
-- dvc/datasets/guardian/2010/world.csv
-- dvc/datasets/guardian/2010/us-news.csv
-- dvc/datasets/guardian/2010/world.csv
-- dvc/datasets/guardian/2010/us-news.csv
-- dvc/datasets/guardian/2010/world.csv
-- dvc/datasets/guardian/2010/world.csv
-- dvc/datasets/guardian/2010/us-news.csv
-- dvc/datasets/guardian/2010/world.csv
-- dvc/datasets/guardian/2011/us-news.csv
-- dvc/datasets/guardian/2011/us-news.csv
-- dvc/datasets/guardian/2012/uk-news.csv
-- dvc/datasets/guardian/2012/us-news.csv
-- dvc/datasets/guardian/2012/world.csv
-- dvc/datasets/guardian/2012/world.csv
-- dvc/datasets/guardian/2014/world.csv
-- dvc/datasets/guardian/2014/world.csv
-- dvc/datasets/guardian/2014/world.csv
-- dvc/datasets/guardian/2014/world.csv
-- dvc/datasets/guardian/2014/world.csv
-- dvc/datasets/guardian/2015/us-news.csv
-- dvc/datasets/guardian/2015/us-news.csv
-- dvc/datasets/guardian/2015/uk-news.csv
-- dvc/datasets/guardian/2015/us-news.csv
-- dvc/datasets/guardian/2016/us-news.csv
-- dvc/datasets/guardian/2016/us-news.csv
-- dvc/datasets/guardian/2016/uk-news.csv
-- dvc/datasets/guardian/2016/us-news.csv
-- dvc/datasets/guardian/2019/us-news.csv
-- dvc/datasets/guardian/2019/world.csv
-- dvc/datasets/guardian/2019/world.csv
-- dvc/datasets/guardian/2019/world.csv
-- dvc/datasets/guardian/2019/world.csv
-- dvc/datasets/guardian/2019/world.csv
-- dvc/datasets/guardian/2019/us-news.csv
-- dvc/datasets/guardian/2019/world.csv
-- dvc/datasets/guardian/2019/uk-news.csv
-- dvc/datasets/guardian/2019/us-news.csv
-- dvc/datasets/guardian/2020/world.csv
-- dvc/datasets/guardian/2020/world.csv
-- dvc/datasets/guardian/2020/world.csv
-- dvc/datasets/guardian/2020/us-news.csv
-- dvc/datasets/guardian/2020/world.csv
-- dvc/datasets/guardian/2020/world.csv
-- dvc/datasets/guardian/2020/us-news.csv
-- dvc/datasets/guardian/2020/world.csv
-- dvc/datasets/guardian/2020/us-news.csv
-- dvc/datasets/guardian/2020/us-news.csv
-- dvc/datasets/guardian/2020/world.csv
-- dvc/datasets/guardian/2021/uk-news.csv
-- dvc/datasets/guardian/2021/us-news.csv
-- dvc/datasets/guardian/2021/world.csv
-- dvc/datasets/guardian/2021/us-news.csv
-- dvc/datasets/guardian/2021/world.csv
-- dvc/datasets/guardian/2021/world.csv
-- dvc/datasets/guardian/2021/us-news.csv
-- dvc/datasets/guardian/2021/world.csv
-- dvc/datasets/guardian/2022/world.csv
-- dvc/datasets/guardian/2022/world.csv
-- dvc/datasets/guardian/2022/world.csv
-- dvc/datasets/guardian/2022/us-news.csv
-- dvc/datasets/guardian/2022/world.csv
-- dvc/datasets/guardian/2022/us-news.csv
-- dvc/datasets/guardian/2022/world.csv
-selected_events:
-- dvc/events/guardian/2000/world.csv
-- dvc/events/guardian/2000/world.csv
-- dvc/events/guardian/2000/world.csv
-- dvc/events/guardian/2000/world.csv
-- dvc/events/guardian/2001/world.csv
-- dvc/events/guardian/2001/world.csv
-- dvc/events/guardian/2001/world.csv
-- dvc/events/guardian/2001/world.csv
-- dvc/events/guardian/2001/uk-news.csv
-- dvc/events/guardian/2001/world.csv
-- dvc/events/guardian/2002/world.csv
-- dvc/events/guardian/2002/world.csv
-- dvc/events/guardian/2002/world.csv
-- dvc/events/guardian/2007/world.csv
-- dvc/events/guardian/2007/uk-news.csv
-- dvc/events/guardian/2007/world.csv
-- dvc/events/guardian/2007/world.csv
-- dvc/events/guardian/2008/world.csv
-- dvc/events/guardian/2008/world.csv
-- dvc/events/guardian/2008/world.csv
-- dvc/events/guardian/2008/world.csv
-- dvc/events/guardian/2010/world.csv
-- dvc/events/guardian/2010/us-news.csv
-- dvc/events/guardian/2010/world.csv
-- dvc/events/guardian/2010/us-news.csv
-- dvc/events/guardian/2010/world.csv
-- dvc/events/guardian/2010/world.csv
-- dvc/events/guardian/2010/us-news.csv
-- dvc/events/guardian/2010/world.csv
-- dvc/events/guardian/2011/us-news.csv
-- dvc/events/guardian/2011/us-news.csv
-- dvc/events/guardian/2012/uk-news.csv
-- dvc/events/guardian/2012/us-news.csv
-- dvc/events/guardian/2012/world.csv
-- dvc/events/guardian/2012/world.csv
-- dvc/events/guardian/2014/world.csv
-- dvc/events/guardian/2014/world.csv
-- dvc/events/guardian/2014/world.csv
-- dvc/events/guardian/2014/world.csv
-- dvc/events/guardian/2014/world.csv
-- dvc/events/guardian/2015/us-news.csv
-- dvc/events/guardian/2015/us-news.csv
-- dvc/events/guardian/2015/uk-news.csv
-- dvc/events/guardian/2015/us-news.csv
-- dvc/events/guardian/2016/us-news.csv
-- dvc/events/guardian/2016/us-news.csv
-- dvc/events/guardian/2016/uk-news.csv
-- dvc/events/guardian/2016/us-news.csv
-- dvc/events/guardian/2019/us-news.csv
-- dvc/events/guardian/2019/world.csv
-- dvc/events/guardian/2019/world.csv
-- dvc/events/guardian/2019/world.csv
-- dvc/events/guardian/2019/world.csv
-- dvc/events/guardian/2019/world.csv
-- dvc/events/guardian/2019/us-news.csv
-- dvc/events/guardian/2019/world.csv
-- dvc/events/guardian/2019/uk-news.csv
-- dvc/events/guardian/2019/us-news.csv
-- dvc/events/guardian/2020/world.csv
-- dvc/events/guardian/2020/world.csv
-- dvc/events/guardian/2020/world.csv
-- dvc/events/guardian/2020/us-news.csv
-- dvc/events/guardian/2020/world.csv
-- dvc/events/guardian/2020/world.csv
-- dvc/events/guardian/2020/us-news.csv
-- dvc/events/guardian/2020/world.csv
-- dvc/events/guardian/2020/us-news.csv
-- dvc/events/guardian/2020/us-news.csv
-- dvc/events/guardian/2020/world.csv
-- dvc/events/guardian/2021/uk-news.csv
-- dvc/events/guardian/2021/us-news.csv
-- dvc/events/guardian/2021/world.csv
-- dvc/events/guardian/2021/us-news.csv
-- dvc/events/guardian/2021/world.csv
-- dvc/events/guardian/2021/world.csv
-- dvc/events/guardian/2021/us-news.csv
-- dvc/events/guardian/2021/world.csv
-- dvc/events/guardian/2022/world.csv
-- dvc/events/guardian/2022/world.csv
-- dvc/events/guardian/2022/world.csv
-- dvc/events/guardian/2022/us-news.csv
-- dvc/events/guardian/2022/world.csv
-- dvc/events/guardian/2022/us-news.csv
-- dvc/events/guardian/2022/world.csv
-lda_paths:
-- dvc/lda/guardian_months/2000-03/world
-- dvc/lda/guardian_months/2000-05/world
-- dvc/lda/guardian_months/2000-06/world
-- dvc/lda/guardian_months/2000-10/world
-- dvc/lda/guardian_months/2001-01/world
-- dvc/lda/guardian_months/2001-02/world
-- dvc/lda/guardian_months/2001-04/world
-- dvc/lda/guardian_months/2001-09/world
-- dvc/lda/guardian_months/2001-10/uk-news
-- dvc/lda/guardian_months/2001-10/world
-- dvc/lda/guardian_months/2002-07/world
-- dvc/lda/guardian_months/2002-11/world
-- dvc/lda/guardian_months/2002-12/world
-- dvc/lda/guardian_months/2007-05/world
-- dvc/lda/guardian_months/2007-07/uk-news
-- dvc/lda/guardian_months/2007-07/world
-- dvc/lda/guardian_months/2007-10/world
-- dvc/lda/guardian_months/2008-02/world
-- dvc/lda/guardian_months/2008-05/world
-- dvc/lda/guardian_months/2008-09/world
-- dvc/lda/guardian_months/2008-10/world
-- dvc/lda/guardian_months/2010-01/world
-- dvc/lda/guardian_months/2010-04/us-news
-- dvc/lda/guardian_months/2010-04/world
-- dvc/lda/guardian_months/2010-08/us-news
-- dvc/lda/guardian_months/2010-08/world
-- dvc/lda/guardian_months/2010-10/world
-- dvc/lda/guardian_months/2010-12/us-news
-- dvc/lda/guardian_months/2010-12/world
-- dvc/lda/guardian_months/2011-04/us-news
-- dvc/lda/guardian_months/2011-05/us-news
-- dvc/lda/guardian_months/2012-04/uk-news
-- dvc/lda/guardian_months/2012-07/us-news
-- dvc/lda/guardian_months/2012-07/world
-- dvc/lda/guardian_months/2012-11/world
-- dvc/lda/guardian_months/2014-02/world
-- dvc/lda/guardian_months/2014-03/world
-- dvc/lda/guardian_months/2014-05/world
-- dvc/lda/guardian_months/2014-06/world
-- dvc/lda/guardian_months/2014-07/world
-- dvc/lda/guardian_months/2015-04/us-news
-- dvc/lda/guardian_months/2015-06/us-news
-- dvc/lda/guardian_months/2015-09/uk-news
-- dvc/lda/guardian_months/2015-10/us-news
-- dvc/lda/guardian_months/2016-01/us-news
-- dvc/lda/guardian_months/2016-03/us-news
-- dvc/lda/guardian_months/2016-06/uk-news
-- dvc/lda/guardian_months/2016-11/us-news
-- dvc/lda/guardian_months/2019-03/us-news
-- dvc/lda/guardian_months/2019-03/world
-- dvc/lda/guardian_months/2019-04/world
-- dvc/lda/guardian_months/2019-06/world
-- dvc/lda/guardian_months/2019-07/world
-- dvc/lda/guardian_months/2019-09/world
-- dvc/lda/guardian_months/2019-10/us-news
-- dvc/lda/guardian_months/2019-11/world
-- dvc/lda/guardian_months/2019-12/uk-news
-- dvc/lda/guardian_months/2019-12/us-news
-- dvc/lda/guardian_months/2020-01/world
-- dvc/lda/guardian_months/2020-03/world
-- dvc/lda/guardian_months/2020-04/world
-- dvc/lda/guardian_months/2020-05/us-news
-- dvc/lda/guardian_months/2020-06/world
-- dvc/lda/guardian_months/2020-08/world
-- dvc/lda/guardian_months/2020-09/us-news
-- dvc/lda/guardian_months/2020-09/world
-- dvc/lda/guardian_months/2020-10/us-news
-- dvc/lda/guardian_months/2020-11/us-news
-- dvc/lda/guardian_months/2020-11/world
-- dvc/lda/guardian_months/2021-01/uk-news
-- dvc/lda/guardian_months/2021-01/us-news
-- dvc/lda/guardian_months/2021-02/world
-- dvc/lda/guardian_months/2021-05/us-news
-- dvc/lda/guardian_months/2021-06/world
-- dvc/lda/guardian_months/2021-08/world
-- dvc/lda/guardian_months/2021-09/us-news
-- dvc/lda/guardian_months/2021-10/world
-- dvc/lda/guardian_months/2022-02/world
-- dvc/lda/guardian_months/2022-03/world
-- dvc/lda/guardian_months/2022-05/world
-- dvc/lda/guardian_months/2022-06/us-news
-- dvc/lda/guardian_months/2022-07/world
-- dvc/lda/guardian_months/2022-08/us-news
-- dvc/lda/guardian_months/2022-12/world
-
-selected_months:
-- 2000-03
-- 2000-05
-- 2000-06
-- 2000-10
-- 2001-01
-- 2001-02
-- 2001-04
-- 2001-09
-- 2001-10
-- 2001-10
-- 2002-07
-- 2002-11
-- 2002-12
-- 2007-05
-- 2007-07
-- 2007-07
-- 2007-10
-- 2008-02
-- 2008-05
-- 2008-09
-- 2008-10
-- 2010-01
-- 2010-04
-- 2010-04
-- 2010-08
-- 2010-08
-- 2010-10
-- 2010-12
-- 2010-12
-- 2011-04
-- 2011-05
-- 2012-04
-- 2012-07
-- 2012-07
-- 2012-11
-- 2014-02
-- 2014-03
-- 2014-05
-- 2014-06
-- 2014-07
-- 2015-04
-- 2015-06
-- 2015-09
-- 2015-10
-- 2016-01
-- 2016-03
-- 2016-06
-- 2016-11
-- 2019-03
-- 2019-03
-- 2019-04
-- 2019-06
-- 2019-07
-- 2019-09
-- 2019-10
-- 2019-11
-- 2019-12
-- 2019-12
-- 2020-01
-- 2020-03
-- 2020-04
-- 2020-05
-- 2020-06
-- 2020-08
-- 2020-09
-- 2020-09
-- 2020-10
-- 2020-11
-- 2020-11
-- 2021-01
-- 2021-01
-- 2021-02
-- 2021-05
-- 2021-06
-- 2021-08
-- 2021-09
-- 2021-10
-- 2022-02
-- 2022-03
-- 2022-05
-- 2022-06
-- 2022-07
-- 2022-08
-- 2022-12
-
+selected_events_months:
+- [dvc/events/guardian/2000/world.csv, 2000-03]
+- [dvc/events/guardian/2000/world.csv, 2000-05]
+- [dvc/events/guardian/2000/world.csv, 2000-06]
+- [dvc/events/guardian/2000/world.csv, 2000-10]
+- [dvc/events/guardian/2001/world.csv, 2001-01]
+- [dvc/events/guardian/2001/world.csv, 2001-02]
+- [dvc/events/guardian/2001/world.csv, 2001-04]
+- [dvc/events/guardian/2001/world.csv, 2001-09]
+- [dvc/events/guardian/2001/uk-news.csv, 2001-10]
+- [dvc/events/guardian/2001/world.csv, 2001-10]
+- [dvc/events/guardian/2002/world.csv, 2002-07]
+- [dvc/events/guardian/2002/world.csv, 2002-11]
+- [dvc/events/guardian/2002/world.csv, 2002-12]
+- [dvc/events/guardian/2007/world.csv, 2007-05]
+- [dvc/events/guardian/2007/uk-news.csv, 2007-07]
+- [dvc/events/guardian/2007/world.csv, 2007-07]
+- [dvc/events/guardian/2007/world.csv, 2007-10]
+- [dvc/events/guardian/2008/world.csv, 2008-02]
+- [dvc/events/guardian/2008/world.csv, 2008-05]
+- [dvc/events/guardian/2008/world.csv, 2008-09]
+- [dvc/events/guardian/2008/world.csv, 2008-10]
+- [dvc/events/guardian/2010/world.csv, 2010-01]
+- [dvc/events/guardian/2010/us-news.csv, 2010-04]
+- [dvc/events/guardian/2010/world.csv, 2010-04]
+- [dvc/events/guardian/2010/us-news.csv, 2010-08]
+- [dvc/events/guardian/2010/world.csv, 2010-08]
+- [dvc/events/guardian/2010/world.csv, 2010-10]
+- [dvc/events/guardian/2010/us-news.csv, 2010-12]
+- [dvc/events/guardian/2010/world.csv, 2010-12]
+- [dvc/events/guardian/2011/us-news.csv, 2011-04]
+- [dvc/events/guardian/2011/us-news.csv, 2011-05]
+- [dvc/events/guardian/2012/uk-news.csv, 2012-04]
+- [dvc/events/guardian/2012/us-news.csv, 2012-07]
+- [dvc/events/guardian/2012/world.csv, 2012-07]
+- [dvc/events/guardian/2012/world.csv, 2012-11]
+- [dvc/events/guardian/2014/world.csv, 2014-02]
+- [dvc/events/guardian/2014/world.csv, 2014-03]
+- [dvc/events/guardian/2014/world.csv, 2014-05]
+- [dvc/events/guardian/2014/world.csv, 2014-06]
+- [dvc/events/guardian/2014/world.csv, 2014-07]
+- [dvc/events/guardian/2015/us-news.csv, 2015-04]
+- [dvc/events/guardian/2015/us-news.csv, 2015-06]
+- [dvc/events/guardian/2015/uk-news.csv, 2015-09]
+- [dvc/events/guardian/2015/us-news.csv, 2015-10]
+- [dvc/events/guardian/2016/us-news.csv, 2016-01]
+- [dvc/events/guardian/2016/us-news.csv, 2016-03]
+- [dvc/events/guardian/2016/uk-news.csv, 2016-06]
+- [dvc/events/guardian/2016/us-news.csv, 2016-11]
+- [dvc/events/guardian/2019/us-news.csv, 2019-03]
+- [dvc/events/guardian/2019/world.csv, 2019-03]
+- [dvc/events/guardian/2019/world.csv, 2019-04]
+- [dvc/events/guardian/2019/world.csv, 2019-06]
+- [dvc/events/guardian/2019/world.csv, 2019-07]
+- [dvc/events/guardian/2019/world.csv, 2019-09]
+- [dvc/events/guardian/2019/us-news.csv, 2019-10]
+- [dvc/events/guardian/2019/world.csv, 2019-11]
+- [dvc/events/guardian/2019/uk-news.csv, 2019-12]
+- [dvc/events/guardian/2019/us-news.csv, 2019-12]
+- [dvc/events/guardian/2020/world.csv, 2020-01]
+- [dvc/events/guardian/2020/world.csv, 2020-03]
+- [dvc/events/guardian/2020/world.csv, 2020-04]
+- [dvc/events/guardian/2020/us-news.csv, 2020-05]
+- [dvc/events/guardian/2020/world.csv, 2020-06]
+- [dvc/events/guardian/2020/world.csv, 2020-08]
+- [dvc/events/guardian/2020/us-news.csv, 2020-09]
+- [dvc/events/guardian/2020/world.csv, 2020-09]
+- [dvc/events/guardian/2020/us-news.csv, 2020-10]
+- [dvc/events/guardian/2020/us-news.csv, 2020-11]
+- [dvc/events/guardian/2020/world.csv, 2020-11]
+- [dvc/events/guardian/2021/uk-news.csv, 2021-01]
+- [dvc/events/guardian/2021/us-news.csv, 2021-01]
+- [dvc/events/guardian/2021/world.csv, 2021-02]
+- [dvc/events/guardian/2021/us-news.csv, 2021-05]
+- [dvc/events/guardian/2021/world.csv, 2021-06]
+- [dvc/events/guardian/2021/world.csv, 2021-08]
+- [dvc/events/guardian/2021/us-news.csv, 2021-09]
+- [dvc/events/guardian/2021/world.csv, 2021-10]
+- [dvc/events/guardian/2022/world.csv, 2022-02]
+- [dvc/events/guardian/2022/world.csv, 2022-03]
+- [dvc/events/guardian/2022/world.csv, 2022-05]
+- [dvc/events/guardian/2022/us-news.csv, 2022-06]
+- [dvc/events/guardian/2022/world.csv, 2022-07]
+- [dvc/events/guardian/2022/us-news.csv, 2022-08]
+- [dvc/events/guardian/2022/world.csv, 2022-12]
 processes:
 tvd_l: 8
 force_new_tvd: False

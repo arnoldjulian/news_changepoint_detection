@@ -16,4 +16,4 @@ if __name__ == "__main__":
         config = yaml.safe_load(file)
 
     summarize_metrics(config)
-    generate_summary_plots(config)
+    #generate_summary_plots(config)

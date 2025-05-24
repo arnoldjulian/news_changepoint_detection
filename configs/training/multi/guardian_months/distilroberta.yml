@@ -179,5 +179,5 @@ selected_months:
 - 2022-08
 - 2022-12
 trainings_root: dvc/trainings/guardian_months
-overwrite_trainings: skip
+overwrite_trainings: new
 deterministic: false
