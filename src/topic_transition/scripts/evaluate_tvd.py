@@ -2,7 +2,6 @@
 import argparse
 import copy
 import os
-import re
 
 import nltk
 import yaml
@@ -32,10 +31,16 @@ def main(base_config: dict) -> None:
         selected_events_months = base_config["selected_events_months"]
         base_config["selected_events"] = [pair[0] for pair in selected_events_months]
         base_config["selected_months"] = [pair[1] for pair in selected_events_months]
-        years = [event.split(os.path.sep)[-2] for event  in base_config["selected_events"]]
+        years = [event.split(os.path.sep)[-2] for event in base_config["selected_events"]]
         section_ids = [event.split(os.path.sep)[-1][:-4] for event in base_config["selected_events"]]
-        base_config["selected_datasets"] = [os.path.join(base_config["dataset_base_path"], year, secton_id) + ".csv" for  (year, secton_id) in zip(years, section_ids)]
-        base_config["lda_paths"] = [os.path.join(base_config["lda_base_path"], month, secton_id) for  (month, secton_id) in zip(base_config["selected_months"], section_ids)]
+        base_config["selected_datasets"] = [
+            os.path.join(base_config["dataset_base_path"], year, secton_id) + ".csv"
+            for (year, secton_id) in zip(years, section_ids)
+        ]
+        base_config["lda_paths"] = [
+            os.path.join(base_config["lda_base_path"], month, secton_id)
+            for (month, secton_id) in zip(base_config["selected_months"], section_ids)
+        ]
 
     lda_config = base_config["lda"]
     dataset_paths = base_config["selected_datasets"]

@@ -1,6 +1,5 @@
 """Tools for training confusion model."""
 import os
-import pickle
 from datetime import date, datetime, timedelta
 
 import matplotlib.pyplot as plt
@@ -14,7 +13,6 @@ from torch import nn as nn
 from torch import optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
-from zmq.backend import first
 
 from topic_transition.data import get_splits
 from topic_transition.loss import BCEWithWeights

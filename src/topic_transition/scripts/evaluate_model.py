@@ -50,15 +50,15 @@ def find_files_with_prefixes(
 
 
 def sanity_check(config):
-    # Extract lists from config
+    """Check the consistency of configuration data used for processing."""
     if "selected_trainings" and "selected_events" in config:
         trainings = config["selected_trainings"]
         events = config["selected_events"]
 
         # Check list size
-        assert len(trainings) == len(events), (
-            f"List size mismatch: trainings({len(trainings)}) and events({len(events)})"
-        )
+        assert len(trainings) == len(
+            events
+        ), f"List size mismatch: trainings({len(trainings)}) and events({len(events)})"
 
 
 def main(config: dict) -> None:

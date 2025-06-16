@@ -1,3 +1,7 @@
 """Tools for training models."""
 
-from .base import generate_random_indicators_for_dataset, generate_constant_indicators_for_dataset, train_on_single_dataset  # noqa: F401
+from .base import (  # noqa: F401
+    generate_random_indicators_for_dataset,
+    generate_constant_indicators_for_dataset,
+    train_on_single_dataset,
+)

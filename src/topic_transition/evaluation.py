@@ -21,7 +21,7 @@ def load_dataset(
         dataset_path = os.path.join(dataset_path, f"{section_id}.pkl")
     else:
         raise ValueError("No dataset path provided!")
-    if dataset_path.endswith('.csv'):
+    if dataset_path.endswith(".csv"):
         dataset = pd.read_csv(dataset_path)  # type: ignore
     else:
         dataset = pd.read_pickle(dataset_path)  # type: ignore

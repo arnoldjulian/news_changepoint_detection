@@ -1,6 +1,5 @@
 """Tools for generating summary plots."""
 import os
-from glob import glob
 
 import numpy as np
 import pandas as pd
@@ -152,7 +151,9 @@ def load_event_deltas(evaluation_path):
     # In the artificial split data the sections have a special format that is incompatible
     if np.all(events["section"].apply(lambda section: len(section.split("_"))) == 3):
         events["section"] = events["section"].apply(lambda section: "_".join(section.split("_")[:2]))
-    events["indicator_path"] = evaluation_path + os.path.sep + events["time_interval"] + "_" +  events["section"] + "_indicators.csv"
+    events["indicator_path"] = (
+        evaluation_path + os.path.sep + events["time_interval"] + "_" + events["section"] + "_indicators.csv"
+    )
     return events
 
 

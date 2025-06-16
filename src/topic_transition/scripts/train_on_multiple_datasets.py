@@ -23,14 +23,13 @@ def process_training(dataset_path, selected_month, base_config=None):
 
 
 def sanity_check(config):
-    # Extract lists from config
+    """Check the consistency of configuration data used for processing."""
     datasets = config["datasets"]
     months = config.get("selected_months", [None] * len(datasets))
 
-    # Check list size
-    assert len(datasets) == len(months), (
-        f"List size mismatch: datasets({len(datasets)}) and selected_months({len(months)})"
-    )
+    assert len(datasets) == len(
+        months
+    ), f"List size mismatch: datasets({len(datasets)}) and selected_months({len(months)})"
 
 
 def main(base_config) -> None:

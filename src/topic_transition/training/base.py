@@ -107,6 +107,7 @@ def generate_random_indicators_for_dataset(config: dict) -> None:
 
 
 def get_dataset(config):
+    """Fetch and process the dataset based on the provided configuration."""
     dataset_path = config["dataset"]["path"]
     if dataset_path.endswith(".csv"):
         data = pd.read_csv(dataset_path)
@@ -124,7 +125,7 @@ def get_dataset(config):
         end_date = end_date + timedelta(days=split_distance)
         data = data[(data["date"] >= start_date) & (data["date"] < end_date)]
         assert len(data) > 0
-        month = str(config['selected_month']).zfill(2)
+        month = str(config["selected_month"]).zfill(2)
         time_interval = f"{config['selected_year']}-{month}"
     else:
         time_interval = path_parts[-2]
@@ -156,7 +157,8 @@ def generate_constant_indicators_for_dataset(config: dict, prediction_day) -> No
             dates = dates[first_split_idx:-first_split_idx]
     else:
         raise ValueError(
-            "Either 'first_split_date' and 'last_split_date' or 'first_split_idx' must be provided in the config.")
+            "Either 'first_split_date' and 'last_split_date' or 'first_split_idx' must be provided in the config."
+        )
 
     if len(dates) <= prediction_day:
         return None
@@ -177,9 +179,9 @@ def train_on_single_dataset(config: dict) -> int | None:
 
     logger.info("Preparing datasets")
     data.reset_index(drop=True, inplace=True)
-    data['webTitle'] = data['webTitle'].fillna('')
-    data['text'] = data['text'].fillna('')
-    data = data[~((data['webTitle'] == '') & (data['text'] == ''))]
+    data["webTitle"] = data["webTitle"].fillna("")
+    data["text"] = data["text"].fillna("")
+    data = data[~((data["webTitle"] == "") & (data["text"] == ""))]
     data["full_text"] = data["webTitle"] + "\n" + data["text"]
     data = chunk_data(data, MAX_CHUNK_SIZE[config["vectorizer"]])
     return train_confusion(data, train_out, config, config["vectorizer"])
