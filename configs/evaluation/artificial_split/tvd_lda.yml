@@ -1,7 +1,7 @@
-training_name: tvd180
+training_name: tvd_lda
 dataset_base_path: "dvc/datasets/artificial_split"
 evaluation_base_path: "dvc/evaluations/artificial_split"
-model_name: "tvd180"
+model_name: "tvd_lda"
 first_split_idx: 10
 lda:
   num_topics: 20

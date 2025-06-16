@@ -1,9 +1,9 @@
-training_name: tvd_l180
+training_name: tvd_lda
 dataset_base_path: "dvc/datasets/guardian"
 training_base_path: "dvc/datasets/guardian"
 evaluation_base_path: "dvc/evaluations/guardian"
 lda_base_path: "dvc/lda/guardian"
-model_name: "tvd_l180"
+model_name: "tvd_lda"
 first_split_date: 01-01
 lda:
   num_topics: 20

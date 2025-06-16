@@ -1,6 +1,6 @@
-training_name: tvd8
+training_name: tvd_lda
 evaluation_base_path: "dvc/evaluations/generated"
-model_name: "tvd8"
+model_name: "tvd_lda"
 first_split_idx: 15
 lda:
   num_topics: 20

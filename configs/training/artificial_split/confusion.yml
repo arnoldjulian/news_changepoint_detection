@@ -1,4 +1,4 @@
-name: "distilroberta"
+name: "confusion"
 dtype: "float32"
 train_ratio: 0.8
 batch_size: 64
