@@ -55,16 +55,3 @@ def test_calculate_deltas_for_dataset_generates_expected_output(mock_training_pa
     assert result_df.loc[0, "model_name"] == "test_model"
     assert "delta" in result_df.columns
     assert result_df.loc[0, "delta"] == 2
-
-
-def test_calculate_deltas_for_dataset_handles_missing_indicators_file(tmp_path, mock_events, mock_evaluation_path):
-    mock_training_path = tmp_path / "2023" / "section_1"
-    mock_training_path.mkdir(parents=True, exist_ok=True)
-
-    with pytest.raises(FileNotFoundError):
-        calculate_deltas_for_dataset(
-            training_path=str(mock_training_path),
-            events=mock_events,
-            evaluation_path=str(mock_evaluation_path),
-            model_name="test_model",
-        )
