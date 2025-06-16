@@ -6,17 +6,7 @@ LANGUAGE_MODEL = spacy.load("en_core_web_sm")
 
 
 def preprocess_text(text: str) -> str:
-    """
-    Preprocesses text.
-
-    Parameters
-    ----------
-    text
-        Unprocessed article text.
-    Returns
-    -------
-        Preprocessed article text.
-    """
+    """Preprocesses text by removing stopwords, punctuation, and lemmatizing."""
     text = text.lower()
     doc = LANGUAGE_MODEL(text)
     tokens = [

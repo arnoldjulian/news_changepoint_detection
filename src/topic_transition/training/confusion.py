@@ -80,7 +80,7 @@ def set_labels(data: pd.DataFrame, split_dates: list[date] | None = None) -> Non
 
 
 def calculate_indicators(
-    dataloader,
+    dataloader: DataLoader,
     model: FFConfusion,
     device: torch.device,
     dates: list[date],
@@ -89,7 +89,7 @@ def calculate_indicators(
 ):
     """Calculate indicator values with a specific model."""
 
-    def get_output_label_ff(batch):
+    def get_output_label_ff(batch: tuple):
         inputs, labels, timestamps = batch
         inputs = inputs.to(device)
         labels = labels.to(device)

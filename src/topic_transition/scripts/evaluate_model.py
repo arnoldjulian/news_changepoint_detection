@@ -1,4 +1,4 @@
-"""Tools for evaluating a specific trained model."""
+"""Script for evaluating trained topic transition models."""
 import argparse
 import os
 import re
@@ -49,7 +49,7 @@ def find_files_with_prefixes(
     return adjusted_trainings, adjusted_events, evaluation_paths
 
 
-def sanity_check(config):
+def sanity_check(config: dict):
     """Check the consistency of configuration data used for processing."""
     if "selected_trainings" and "selected_events" in config:
         trainings = config["selected_trainings"]

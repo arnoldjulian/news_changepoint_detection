@@ -11,7 +11,7 @@ logger = logging.getLogger("train_with_single_dataset")
 logger.setLevel(logging.INFO)
 
 
-def process_training(dataset_path, selected_month, base_config=None):
+def process_training(dataset_path: str, selected_month: str, base_config: dict = None):
     """Do a training on a single dataset or a month in the data."""
     config = base_config.copy()
     config["dataset"] = {"path": dataset_path}

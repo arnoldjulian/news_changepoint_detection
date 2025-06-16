@@ -103,7 +103,7 @@ def calculate_topict_distribution_tvd(
     )
 
 
-def get_tvd_metrics(all_events, config, dataset_paths, lda_config):
+def get_tvd_metrics(all_events: list, config: dict, dataset_paths: list[str], lda_config: dict):
     """Calculate quality metrics for TVD for specific datasets."""
     if config["tvd_l"] == "inf":
         tvd_l = np.inf
@@ -138,7 +138,7 @@ def get_tvd_metrics(all_events, config, dataset_paths, lda_config):
     return deltas_df, tvds
 
 
-def load_all_events(config):
+def load_all_events(config: dict):
     """Load all event DataFrames for each dataset."""
     with Pool(processes=config["processes"]) as pool:
         events_paths = config["selected_events"]
@@ -147,13 +147,13 @@ def load_all_events(config):
 
 
 def calculate_topic_distribution_from_base_path(
-    dataset_path,
-    lda_base_path,
-    selected_month,
-    lda_config,
-    tvd_l,
-    first_split_date,
-    force_new_tvd,
+    dataset_path: str,
+    lda_base_path: str,
+    selected_month: str,
+    lda_config: dict,
+    tvd_l: int,
+    first_split_date: str,
+    force_new_tvd: bool,
     first_split_idx: int | None = None,
 ):
     """Calculate LDA toopic distributions using dataset and root path to ldas."""

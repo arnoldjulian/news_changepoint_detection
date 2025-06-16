@@ -1,4 +1,4 @@
-"""Tools for evaluating Total Variational Distance with Latent Dirichlet Allocation."""
+"""Script for evaluating Total Variational Distance with Latent Dirichlet Allocation."""
 import argparse
 import copy
 import os

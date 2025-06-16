@@ -28,23 +28,7 @@ Here is the real article:
 
 
 def main(configuration: str) -> None:
-    """
-    Run script.
-
-    Parameters
-    ----------
-    configuration : str
-        Path to the YAML configuration file. The configuration file should include:
-        - articles_per_day: Number of articles to generate per day.
-        - start_date: The start date for article generation.
-        - end_date: The end date for article generation.
-        - split_date: Date to switch the main topic.
-        - reference_dataset: Path to the reference dataset file.
-        - openai_api_key: API key for OpenAI client.
-        - main_topic_1: Main topic for articles before the split date.
-        - main_topic_2: Main topic for articles after the split date.
-        - output_base: Base directory for storing the generated articles.
-    """
+    """Generate artificial articles based on existing Guardian articles and specified topics."""
 
     def extract_text(chat_completion):
         content = chat_completion.choices[0].message.content

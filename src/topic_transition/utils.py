@@ -10,6 +10,7 @@ import time
 from datetime import date, timedelta
 
 import numpy as np
+import pandas as pd
 import torch
 from gensim import corpora
 from gensim.models import LdaModel
@@ -127,7 +128,7 @@ def find_matching_directories(base_path: str) -> list:
     return matching_dirs
 
 
-def load_or_train_lda(dataset, force_new_tvd, lda_config, lda_path):
+def load_or_train_lda(dataset: pd.DataFrame, force_new_tvd: bool, lda_config: dict, lda_path: str):
     """Load an LDA model if exists. Otherwise train and save a new model."""
     corpus_path = os.path.join(lda_path, "corpus.pkl")
     dictionary_path = os.path.join(lda_path, "dictionary.pkl")

@@ -12,7 +12,9 @@ def stde(x):
     return np.std(x) / np.sqrt(len(x))
 
 
-def plot_indicators(grouped, indicators, output_root_path, xticks_format="YY-MM"):
+def plot_indicators(
+    grouped: pd.DataFrame, indicators: pd.DataFrame, output_root_path: str, xticks_format: str = "YY-MM"
+):
     """Plot indicators for all times, sections and models."""
     for key, group in list(grouped):
         agg_indicators = indicators["_".join(key[:3])]
@@ -98,7 +100,7 @@ def plot_indicators(grouped, indicators, output_root_path, xticks_format="YY-MM"
         agg_indicators.to_csv(os.path.join(output_path, f"{key[0]}_{key[1]}_{key[2]}.csv"), index=False)
 
 
-def aggregate_indicators(grouped):
+def aggregate_indicators(grouped: pd.DataFrame):
     """Calculate mean and stde indicators for all 5 iterations."""
     indicators = {}
     for key, group in grouped:
@@ -115,7 +117,7 @@ def aggregate_indicators(grouped):
     return indicators
 
 
-def get_all_iteration_deltas(config):
+def get_all_iteration_deltas(config: dict):
     """Get DataFrame with all indicators."""
     all_deltas = []
     for model in config["evaluations"]:
@@ -134,7 +136,7 @@ def get_all_iteration_deltas(config):
     return pd.concat(all_deltas, ignore_index=True)
 
 
-def load_event_deltas(evaluation_path):
+def load_event_deltas(evaluation_path: str):
     """Load events with deltas."""
     events_path = os.path.join(evaluation_path, "deltas.csv")
     events = pd.read_csv(events_path)
@@ -148,7 +150,6 @@ def load_event_deltas(evaluation_path):
     events["year"] = events["date"].dt.year
     events["event_date"] = events["date"].dt.date
     events.drop_duplicates(subset=["date", "section"], inplace=True, ignore_index=True)
-    # In the artificial split data the sections have a special format that is incompatible
     if np.all(events["section"].apply(lambda section: len(section.split("_"))) == 3):
         events["section"] = events["section"].apply(lambda section: "_".join(section.split("_")[:2]))
     events["indicator_path"] = (
@@ -157,7 +158,7 @@ def load_event_deltas(evaluation_path):
     return events
 
 
-def generate_summary_plots(config):
+def generate_summary_plots(config: dict):
     """Plot aggregate indicator values."""
     summary_path = config["summary_path"]
 

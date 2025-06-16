@@ -58,7 +58,9 @@ def chunk_data(data: pd.DataFrame, chunk_size: int) -> pd.DataFrame:
     return pd.DataFrame(new_rows)
 
 
-def prepare_training_directory(config: dict, time_interval: str, section: str, max_iterations=5) -> tuple[str, str]:
+def prepare_training_directory(
+    config: dict, time_interval: str, section: str, max_iterations: int = 5
+) -> tuple[str | None, str | None]:
     """Prepare directories and paths required for model training."""
     train_out = os.path.join(config["trainings_root"], time_interval)
     train_out = os.path.join(train_out, section)
@@ -102,11 +104,10 @@ def generate_random_indicators_for_dataset(config: dict) -> None:
     indicator_values = pd.DataFrame({"date": dates})
     indicator_values["indicator_value"] = 0
     indicator_values.loc[indicator_values["date"] == random_split_date, "indicator_value"] = 1
-
     indicator_values.to_csv(indicators_path, index=False)
 
 
-def get_dataset(config):
+def get_dataset(config: dict):
     """Fetch and process the dataset based on the provided configuration."""
     dataset_path = config["dataset"]["path"]
     if dataset_path.endswith(".csv"):
@@ -132,7 +133,7 @@ def get_dataset(config):
     return data, section, time_interval
 
 
-def generate_constant_indicators_for_dataset(config: dict, prediction_day) -> None:
+def generate_constant_indicators_for_dataset(config: dict, prediction_day: int) -> None:
     """Train a single model with constant split indicator."""
     data, section, time_interval = get_dataset(config)
     train_out, indicators_path = prepare_training_directory(config, time_interval, section, 365)
