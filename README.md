@@ -23,24 +23,6 @@ To run one type of training run
 make train L=... dataset=<dataset_type>  model=<model_type>
 ```
 
-For example, to run trainings on all available generated datasets with the transformer model:
-
-```bash
-make train L=10 dataset=generated model=ff_embed
-```
-
-For the trainings with the real data with artificial split:
-
-```bash
-make train L=180 dataset=artificial_split model=ff_embed
-```
-
-For the real world data:
-
-```bash
-make train L=180 dataset=guardian model=ff_embed
-```
-
 In the Makefile you can find exactly what configuration files are used for each training.
 In order to run the trainings, you will need to put the training data in the appropriate directories like so:
 
@@ -62,13 +44,13 @@ script takes individual results and generates comparative metrics (the top-n del
 Example evaluation:
 
 ```bash
-make eval L=10 dataset=generated model=ff_embed
+make eval L=8 dataset=generated model=confusion
 ```
 
 It is also possible to run evaluation for the baseline Total Variation Distance model (no previous training required):
 
 ```bash
-make eval_tvd L=10 dataset=generated
+make eval_tvd L=8 dataset=generated
 ```
 
 Example summarization:
@@ -76,18 +58,6 @@ Example summarization:
 ```bash
 make summarize dataset=generated
 ```
-
-For the evaluations, you will need the events .csv files,
-TODO: add Zenodo link
-
-
-## Reproducing metrics from the paper
-
-In order to help reproduce the results, I included a file called
-```
-reproduce.txt
-```
-that contains all commands that you should need to run to reproduce our results.
 
 ## License
 
