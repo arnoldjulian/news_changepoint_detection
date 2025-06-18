@@ -24,17 +24,6 @@ make train L=... dataset=<dataset_type>  model=<model_type>
 ```
 
 In the Makefile you can find exactly what configuration files are used for each training.
-In order to run the trainings, you will need to put the training data in the appropriate directories like so:
-
-Repository Root  
-└── dvc  
-    └── datasets  
-        ├── artificial_split  
-        ├── 2000  
-        │   └── us-news_uk-news_2000-04-14.pkl  
-        │   ...  
-        ├── generated  
-        └── guardian_extended  
 
 ## Running evaluations and generating summaries
 
