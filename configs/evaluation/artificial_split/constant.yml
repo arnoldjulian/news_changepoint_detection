@@ -1,0 +1,25 @@
+training_name: constant
+dataset_base_path: "dvc/datasets/artificial_split"
+evaluation_base_path: "dvc/evaluations/artificial_split"
+model_name: "constant"
+selected_trainings: [
+  "dvc/trainings/artificial_split/2010/us-news_world_2010-04-15/constant",
+  "dvc/trainings/artificial_split/2015/uk-news_us-news_2015-05-07/constant",
+  "dvc/trainings/artificial_split/2016/us-news_uk-news_2016-10-15/constant",
+  "dvc/trainings/artificial_split/2019/uk-news_world_2019-01-18/constant",
+  "dvc/trainings/artificial_split/2019/uk-news_world_2019-10-30/constant",
+  "dvc/trainings/artificial_split/2019/us-news_uk-news_2019-03-27/constant",
+  "dvc/trainings/artificial_split/2019/us-news_uk-news_2019-02-16/constant",
+  "dvc/trainings/artificial_split/2022/us-news_world_2022-03-17/constant"
+]
+selected_events: [
+  "dvc/events/artificial_split/2010/us-news_world_2010-04-15.csv",
+  "dvc/events/artificial_split/2015/uk-news_us-news_2015-05-07.csv",
+  "dvc/events/artificial_split/2016/us-news_uk-news_2016-10-15.csv",
+  "dvc/events/artificial_split/2019/uk-news_world_2019-01-18.csv",
+  "dvc/events/artificial_split/2019/uk-news_world_2019-10-30.csv",
+  "dvc/events/artificial_split/2019/us-news_uk-news_2019-03-27.csv",
+  "dvc/events/artificial_split/2019/us-news_uk-news_2019-02-16.csv",
+  "dvc/events/artificial_split/2022/us-news_world_2022-03-17.csv"
+]
+processes:

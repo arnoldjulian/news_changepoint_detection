@@ -1,0 +1,88 @@
+"""Script for evaluating Total Variational Distance with Latent Dirichlet Allocation."""
+import argparse
+import copy
+import os
+
+import nltk
+import yaml
+from nltk.corpus import stopwords
+
+from topic_transition.tvd import get_tvd_metrics, load_all_events
+
+nltk.download("punkt")
+nltk.download("stopwords")
+stop_words = set(stopwords.words("english"))
+
+
+def main(base_config: dict) -> None:
+    """Evaluate TVD on selected datasets."""
+    training_name = base_config["model_name"]
+    repeat_evaluations = base_config["repeat_evaluations"]
+    if repeat_evaluations:
+        training_names = [training_name]
+        for i in range(1, repeat_evaluations):
+            training_names.append(f"{training_name}_num_{i}")
+    else:
+        training_names = [training_name]
+
+    evaluations_base_path = base_config["evaluation_base_path"]
+
+    if "selected_events_months" in base_config:
+        selected_events_months = base_config["selected_events_months"]
+        base_config["selected_events"] = [pair[0] for pair in selected_events_months]
+        base_config["selected_months"] = [pair[1] for pair in selected_events_months]
+        years = [event.split(os.path.sep)[-2] for event in base_config["selected_events"]]
+        section_ids = [event.split(os.path.sep)[-1][:-4] for event in base_config["selected_events"]]
+        base_config["selected_datasets"] = [
+            os.path.join(base_config["dataset_base_path"], year, secton_id) + ".csv"
+            for (year, secton_id) in zip(years, section_ids)
+        ]
+        base_config["lda_paths"] = [
+            os.path.join(base_config["lda_base_path"], month, secton_id)
+            for (month, secton_id) in zip(base_config["selected_months"], section_ids)
+        ]
+
+    lda_config = base_config["lda"]
+    dataset_paths = base_config["selected_datasets"]
+    years_sections = [dataset_path.split(os.path.sep)[-2:] for dataset_path in dataset_paths]
+    section_ids = [value[1][:-4] for value in years_sections]
+    if "selected_months" in base_config:
+        selected_months = base_config["selected_months"]
+        selected_data_intervals = []
+        for selected_month in selected_months:
+            selected_year, selected_month = selected_month.split("-")
+            time_interval = f"{selected_year}-{selected_month}"
+            selected_data_intervals.append(time_interval)
+    else:
+        selected_data_intervals = [value[0] for value in years_sections]
+
+    all_events = load_all_events(base_config)
+
+    for i, training_name in enumerate(training_names):
+        config = copy.deepcopy(base_config)
+        evaluation_path = os.path.join(evaluations_base_path, training_name)
+
+        os.makedirs(evaluation_path, exist_ok=True)
+
+        if i > 0:
+            lda_paths = config["lda_paths"]
+            for j, lda_path in enumerate(lda_paths):
+                lda_paths[j] = f"{lda_path}_num_{i}"
+
+        deltas_df, tvds = get_tvd_metrics(all_events, config, dataset_paths, lda_config)
+
+        for tvd, selected_data_interval, section_id in zip(tvds, selected_data_intervals, section_ids):
+            indicator_path = os.path.join(evaluation_path, f"{selected_data_interval}_{section_id}_indicators.csv")
+            tvd.to_csv(indicator_path, index=False)
+
+        deltas_df.to_csv(os.path.join(evaluation_path, "deltas.csv"), index=False)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("configuration", help="Configuration for evaluation.")
+
+    args = parser.parse_args()
+
+    with open(args.configuration, "r") as file:
+        main(yaml.safe_load(file))

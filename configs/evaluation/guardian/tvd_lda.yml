@@ -1,0 +1,100 @@
+training_name: tvd_lda
+dataset_base_path: "dvc/datasets/guardian"
+training_base_path: "dvc/datasets/guardian"
+evaluation_base_path: "dvc/evaluations/guardian"
+lda_base_path: "dvc/lda/guardian"
+model_name: "tvd_lda"
+first_split_date: 01-01
+lda:
+  num_topics: 20
+  iterations: 83
+  passes: 22
+  chunksize: 319
+selected_datasets: [
+  "dvc/datasets/guardian/2000/world.csv",
+  "dvc/datasets/guardian/2001/world.csv",
+  "dvc/datasets/guardian/2001/uk-news.csv",
+  "dvc/datasets/guardian/2001/world.csv",
+  "dvc/datasets/guardian/2002/world.csv",
+  "dvc/datasets/guardian/2007/uk-news.csv",
+  "dvc/datasets/guardian/2007/world.csv",
+  "dvc/datasets/guardian/2008/world.csv",
+  "dvc/datasets/guardian/2010/us-news.csv",
+  "dvc/datasets/guardian/2010/world.csv",
+  "dvc/datasets/guardian/2011/us-news.csv",
+  "dvc/datasets/guardian/2012/uk-news.csv",
+  "dvc/datasets/guardian/2012/world.csv",
+  "dvc/datasets/guardian/2014/world.csv",
+  "dvc/datasets/guardian/2015/uk-news.csv",
+  "dvc/datasets/guardian/2015/us-news.csv",
+  "dvc/datasets/guardian/2016/uk-news.csv",
+  "dvc/datasets/guardian/2016/us-news.csv",
+  "dvc/datasets/guardian/2019/uk-news.csv",
+  "dvc/datasets/guardian/2019/us-news.csv",
+  "dvc/datasets/guardian/2019/world.csv",
+  "dvc/datasets/guardian/2020/us-news.csv",
+  "dvc/datasets/guardian/2020/world.csv",
+  "dvc/datasets/guardian/2021/world.csv",
+  "dvc/datasets/guardian/2022/us-news.csv",
+]
+selected_events: [
+  "dvc/events/guardian/2000/world.csv",
+  "dvc/events/guardian/2001/world.csv",
+  "dvc/events/guardian/2001/uk-news.csv",
+  "dvc/events/guardian/2001/world.csv",
+  "dvc/events/guardian/2002/world.csv",
+  "dvc/events/guardian/2007/uk-news.csv",
+  "dvc/events/guardian/2007/world.csv",
+  "dvc/events/guardian/2008/world.csv",
+  "dvc/events/guardian/2010/us-news.csv",
+  "dvc/events/guardian/2010/world.csv",
+  "dvc/events/guardian/2011/us-news.csv",
+  "dvc/events/guardian/2012/uk-news.csv",
+  "dvc/events/guardian/2012/world.csv",
+  "dvc/events/guardian/2014/world.csv",
+  "dvc/events/guardian/2015/uk-news.csv",
+  "dvc/events/guardian/2015/us-news.csv",
+  "dvc/events/guardian/2016/uk-news.csv",
+  "dvc/events/guardian/2016/us-news.csv",
+  "dvc/events/guardian/2019/uk-news.csv",
+  "dvc/events/guardian/2019/us-news.csv",
+  "dvc/events/guardian/2019/world.csv",
+  "dvc/events/guardian/2020/us-news.csv",
+  "dvc/events/guardian/2020/world.csv",
+  "dvc/events/guardian/2021/us-news.csv",
+  "dvc/events/guardian/2021/world.csv",
+  "dvc/events/guardian/2022/world.csv",
+  "dvc/events/guardian/2022/us-news.csv",
+]
+lda_paths: [
+  "dvc/lda/guardian/2000/world",
+  "dvc/lda/guardian/2001/world",
+  "dvc/lda/guardian/2001/uk-news",
+  "dvc/lda/guardian/2001/world",
+  "dvc/lda/guardian/2002/world",
+  "dvc/lda/guardian/2007/uk-news",
+  "dvc/lda/guardian/2007/world",
+  "dvc/lda/guardian/2008/world",
+  "dvc/lda/guardian/2010/us-news",
+  "dvc/lda/guardian/2010/world",
+  "dvc/lda/guardian/2011/us-news",
+  "dvc/lda/guardian/2012/uk-news",
+  "dvc/lda/guardian/2012/world",
+  "dvc/lda/guardian/2014/world",
+  "dvc/lda/guardian/2015/uk-news",
+  "dvc/lda/guardian/2015/us-news",
+  "dvc/lda/guardian/2016/uk-news",
+  "dvc/lda/guardian/2016/us-news",
+  "dvc/lda/guardian/2019/uk-news",
+  "dvc/lda/guardian/2019/us-news",
+  "dvc/lda/guardian/2019/world",
+  "dvc/lda/guardian/2020/us-news",
+  "dvc/lda/guardian/2020/world",
+  "dvc/lda/guardian/2021/world",
+  "dvc/lda/guardian/2022/us-news",
+  "dvc/lda/guardian/2022/world",
+]
+processes:
+tvd_l: 180
+force_new_tvd: False
+repeat_evaluations: 5
