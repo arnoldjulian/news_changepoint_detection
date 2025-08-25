@@ -51,8 +51,3 @@ make summarize dataset=generated
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contact
-
-For any further questions, email me at:  
-**csabazsolnai (at) pm (dot) me**
