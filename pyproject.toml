@@ -6,9 +6,6 @@ max-line-length = 120
 
 [project]
 name = "topic_transition"
-authors = [
-  {name = "Csaba Zsolnai,Julian Arnold"}
-]
 readme = "README.md"
 requires-python = ">=3.10,<3.11"
 dynamic = ["version"]
